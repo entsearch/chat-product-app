@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { MdMic } from 'react-icons/md';
 import { FiSend } from 'react-icons/fi';
 
@@ -16,76 +16,89 @@ export default function Home() {
   const [storefrontData, setStorefrontData] = useState<any>(null);
   const indexRef = useRef(0);
   const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const cursorIntervalRef = useRef<NodeJS.Timeout | null>(null); // Added for cursor interval
+  const isTypingCompleteRef = useRef(false); // Track if typing is complete
 
   // Load JSON
   useEffect(() => {
     fetch('/storefront.json')
       .then((res) => res.json())
-      .then((data) => setStorefrontData(data));
+      .then((data) => {
+        console.log("Fetched storefrontData:", JSON.stringify(data));
+        setStorefrontData(data);
+      });
   }, []);
+
+  // Memoize storefrontData to prevent unnecessary re-runs
+  const stableStorefrontData = useMemo(() => storefrontData, [storefrontData]);
 
   // Typing effect
   useEffect(() => {
-    if (!storefrontData || !storefrontData.welcome || !storefrontData.welcome.text) {
-      console.log("storefrontData is invalid:", storefrontData);
+    if (!stableStorefrontData || !stableStorefrontData.welcome || !stableStorefrontData.welcome.text) {
+      console.log("storefrontData is invalid:", stableStorefrontData);
       return;
     }
 
-    console.log("useEffect running with storefrontData:", JSON.stringify(storefrontData));
-    console.log("Raw storefrontData.welcome.text:", storefrontData.welcome.text);
+    console.log("useEffect running with storefrontData:", JSON.stringify(stableStorefrontData));
+    console.log("Raw storefrontData.welcome.text:", stableStorefrontData.welcome.text);
 
-    setTypedText(''); // Reset text
-    setShowCursor(true); // Ensure cursor is visible at start
-    indexRef.current = 0; // Reset index
-    const fullText = storefrontData.welcome.text.replace(/^\\"|\\"$/g, '').replace(/\\/g, ''); // Remove escaped quotes and backslashes
+    // Only reset if typing hasn't completed
+    if (!isTypingCompleteRef.current) {
+      setTypedText('');
+      setShowCursor(true);
+      indexRef.current = 0;
+    }
+
+    const fullText = stableStorefrontData.welcome.text.replace(/^\\"|\\"$/g, '').replace(/\\/g, '').trim();
 
     console.log("fullText:", JSON.stringify(fullText));
     console.log("fullText length:", fullText.length);
     console.log("fullText characters:", fullText.split('').map((c, i) => `${i}: ${c}`));
 
-    // Clear any existing intervals
+    // Clear any existing interval
     if (typingIntervalRef.current) {
       clearInterval(typingIntervalRef.current);
-    }
-    if (cursorIntervalRef.current) {
-      clearInterval(cursorIntervalRef.current);
     }
 
     typingIntervalRef.current = setInterval(() => {
       if (indexRef.current < fullText.length && fullText[indexRef.current] !== undefined) {
-        const currentIndex = indexRef.current; // Capture current index
+        const currentIndex = indexRef.current;
         console.log(`Index: ${currentIndex}, Char: ${fullText[currentIndex]}`);
         setTypedText((prev) => {
           const newText = prev + fullText[currentIndex];
           console.log("typedText:", newText);
+          if (currentIndex === fullText.length - 1) {
+            console.log("Final typedText:", newText);
+            setShowCursor(false);
+            console.log("showCursor set to:", false);
+            isTypingCompleteRef.current = true; // Mark typing as complete
+            if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
+          }
           return newText;
         });
         indexRef.current++;
       } else {
+        console.log("Typing complete, hiding cursor");
         console.log("Final typedText:", typedText);
-        setShowCursor(false); // Hide cursor when typing completes
+        setShowCursor(false);
+        console.log("showCursor set to:", false);
+        isTypingCompleteRef.current = true;
         if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
-        if (cursorIntervalRef.current) clearInterval(cursorIntervalRef.current); // Clear cursor interval
       }
-    }, 100); // Reduced from 200ms to 100ms for faster typing
-
-    cursorIntervalRef.current = setInterval(() => setShowCursor((prev) => !prev), 500);
+    }, 100); // 100ms for typing speed; change to 50 for faster
 
     return () => {
       console.log("Cleaning up intervals");
       if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
-      if (cursorIntervalRef.current) clearInterval(cursorIntervalRef.current);
     };
-  }, [storefrontData]);
+  }, [stableStorefrontData]);
 
   const handleSend = () => {
     if (!input.trim()) return;
-    setMessages([...messages, { role: 'user', content: input }, { role: 'assistant', products: storefrontData.products }]);
+    setMessages([...messages, { role: 'user', content: input }, { role: 'assistant', products: stableStorefrontData?.products }]);
     setInput('');
   };
 
-  if (!storefrontData) return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  if (!stableStorefrontData) return <div className="flex justify-center items-center h-screen">Loading...</div>;
 
   return (
     <div className="flex flex-col h-screen bg-white">
@@ -93,9 +106,9 @@ export default function Home() {
       <div className="text-center mt-12">
         <h1 className="text-4xl font-bold text-blue-600">
           {typedText}
-          <span className={`inline-block ${showCursor ? 'animate-pulse' : ''}`}>|</span>
+          {showCursor && <span className="inline-block animate-pulse">|</span>}
         </h1>
-        {storefrontData.welcome && <p className="text-sm text-gray-500 mt-2">{storefrontData.welcome.subtext}</p>}
+        {stableStorefrontData.welcome && <p className="text-sm text-gray-500 mt-2">{stableStorefrontData.welcome.subtext}</p>}
       </div>
 
       {/* Scrollable messages */}
