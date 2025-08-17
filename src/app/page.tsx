@@ -1,103 +1,176 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
+import { MdMic } from 'react-icons/md';
+import { FiSend } from 'react-icons/fi';
+
+function getRandomPrice() {
+  return `$${Math.floor(Math.random() * (4000 - 800 + 1) + 800)}`;
+}
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [messages, setMessages] = useState<
+    { role: 'user' | 'assistant'; content?: string; products?: any[] }[]
+  >([]);
+  const [input, setInput] = useState('');
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const [typedText, setTypedText] = useState('');
+  const [showCursor, setShowCursor] = useState(true);
+  const [storefrontData, setStorefrontData] = useState<any>(null);
+
+  useEffect(() => {
+    fetch('/storefront.json')
+      .then((res) => res.json())
+      .then((data) => setStorefrontData(data));
+  }, []);
+
+  useEffect(() => {
+    if (!storefrontData) return;
+
+    setTypedText('');
+    const fullText = storefrontData.welcome.text;
+    let i = 0;
+
+    const typingInterval = setInterval(() => {
+      if (i < fullText.length) {
+        setTypedText((prev) => prev + fullText[i]);
+        i++;
+      } else {
+        clearInterval(typingInterval);
+      }
+    }, 100);
+
+    const cursorInterval = setInterval(() => setShowCursor((prev) => !prev), 500);
+
+    return () => {
+      clearInterval(typingInterval);
+      clearInterval(cursorInterval);
+    };
+  }, [storefrontData]);
+
+  const handleSend = () => {
+    if (!input.trim()) return;
+    setMessages([
+      ...messages,
+      { role: 'user', content: input },
+      { role: 'assistant', products: storefrontData.products },
+    ]);
+    setInput('');
+  };
+
+  if (!storefrontData) return <div className="flex justify-center items-center h-screen">Loading...</div>;
+
+  return (
+    <div className="flex flex-col h-screen bg-white">
+      {/* Welcome message */}
+      <div className="text-center mt-12">
+        <h1 className="text-4xl font-bold text-blue-600">
+          {typedText}
+          <span className={`inline-block ${showCursor ? 'animate-pulse' : ''}`}>|</span>
+        </h1>
+        <p className="text-sm text-gray-500 mt-2">{storefrontData.welcome.subtext}</p>
+      </div>
+
+      {/* Scrollable messages */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-4 pb-40 mt-6">
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+            <div
+              className={`max-w-full p-4 text-center ${
+                msg.role === 'user'
+                  ? 'bg-blue-500 text-white min-w-[50%] rounded-tl-none rounded-tr-2xl rounded-bl-2xl rounded-br-2xl'
+                  : 'bg-black text-white rounded-2xl'
+              }`}
+            >
+              {msg.role === 'user' ? (
+                <p className="text-center">{msg.content}</p>
+              ) : (
+                <ProductGrid products={msg.products || []} />
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Floating Chat box */}
+        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-[50%]">
+        <div className="flex items-center bg-gray-300 rounded-3xl p-4 shadow-lg">
+            <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+                }
+            }}
+            rows={1}
+            className="flex-1 px-4 py-3 rounded-2xl resize-none focus:outline-none bg-gray-200"
+            placeholder="Explore Samsung TVs..."
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <button onClick={handleSend} className="ml-3 text-blue-500 hover:text-blue-700">
+            <FiSend className="w-6 h-6" />
+            </button>
+            <button className="ml-3 text-gray-600 hover:text-gray-800">
+            <MdMic className="w-6 h-6" />
+            </button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+    </div>
+  );
+}
+
+function ProductGrid({ products }: { products: any[] }) {
+  return (
+    <div className="p-6 rounded-3xl shadow-lg">
+      <div className="grid gap-8">
+        <div className="grid grid-cols-2 gap-8">
+          {products.slice(0, 2).map((p, i) => (
+            <ProductCard key={i} {...p} />
+          ))}
+        </div>
+        <div className="grid grid-cols-3 gap-8">
+          {products.slice(2, 5).map((p, i) => (
+            <ProductCard key={i + 2} {...p} />
+          ))}
+        </div>
+        <div className="flex justify-center">
+          {products.slice(5, 6).map((p, i) => (
+            <ProductCard key={i + 5} {...p} large />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProductCard({ name, description, image, large }: any) {
+  const price = getRandomPrice();
+
+  return (
+    <div
+      className={`bg-white text-black p-6 flex flex-col items-center text-center shadow-md transform transition-transform hover:scale-105 hover:shadow-2xl ${
+        large ? 'w-2/3' : ''
+      }`}
+    >
+      <img src={image} alt={name} className={`w-full ${large ? 'max-w-2xl' : 'max-w-sm'} mb-4 rounded-lg object-contain`} />
+      <h2 className="text-2xl font-bold mb-2">{name}</h2>
+      <p className="text-base mb-2">{description}</p>
+      <p className="text-lg font-semibold text-blue-600 mb-4">{price}</p>
+      <div className="flex space-x-4 mt-auto">
+        <button className="bg-blue-600 text-white px-5 py-2 rounded-full font-semibold hover:bg-blue-700 transition">
+          Learn more
+        </button>
+        <button className="bg-blue-600 text-white px-5 py-2 rounded-full font-semibold hover:bg-blue-700 transition">
+          Compare
+        </button>
+        <button className="bg-blue-600 text-white px-5 py-2 rounded-full font-semibold hover:bg-blue-700 transition">
+          Add to cart
+        </button>
+      </div>
     </div>
   );
 }

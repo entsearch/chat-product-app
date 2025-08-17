@@ -1,0 +1,44 @@
+{
+  "welcome": {
+    "text": "Welcome to Samsung TV Storefront",
+    "subtext": "(GenAI can make mistakes)"
+  },
+  "products": [
+    {
+      "name": "Neo OLED 4K",
+      "description": "Experience stunning picture quality with advanced processing.",
+      "image": "https://images.samsung.com/is/image/samsung/p6pim/us/qn75qn1efafxza/gallery/us-neo-qled-qn75qn1efafxza-front-black-546228291?$product-details-jpg$",
+      "tagline": "Built for ultimate entertainment."
+    },
+    {
+      "name": "Samsung QLED TV",
+      "description": "Vibrant colors, deep blacks, and smart features.",
+      "image": "https://image-us.samsung.com/SamsungUS/home/television-home-theater/tvs/the-terrace/08272024/QN55LST7DAFXZA_007_Front3_Titan_Black_Scom_1600x1200.jpg?$product-details-jpg$",
+      "tagline": "Built for immersive viewing."
+    },
+    {
+      "name": "Neo QLED 4K",
+      "description": "Perfect blacks, infinite contrast, and cinematic sound.",
+      "image": "https://image-us.samsung.com/SamsungUS/home/television-home-theater/tvs/the-terrace/08262024/QN55LST7DAFXZA_007_Front3_Titan_Black_Scom_1600x1200.jpg?$product-details-jpg$",
+      "tagline": "Cinema in your living room."
+    },
+    {
+      "name": "Vision AI Smart TV",
+      "description": "High brightness and incredible HDR for every scene.",
+      "image": "https://images.samsung.com/is/image/samsung/p6pim/us/qn75qef1afxza/gallery/us-qled-qef1-548500-qn75qef1afxza-547033885?$product-details-jpg$",
+      "tagline": "Bright and brilliant."
+    },
+    {
+      "name": "QLED 4K QE1D",
+      "description": "Reliable performance with stunning clarity.",
+      "image": "https://image-us.samsung.com/SamsungUS/home/television-home-theater/tvs/qled-4k-tvs/0715202439102/70_65-S.COM_Version_1_V01.jpg?$product-details-jpg$",
+      "tagline": "Clarity redefined."
+    },
+    {
+      "name": "Crystal UHD U7900F",
+      "description": "Affordable brilliance with Dolby Vision.",
+      "image": "https://images.samsung.com/is/image/samsung/p6pim/us/un58u7900ffxza/gallery/us-uhd-4k-tv-un58u7900ffxza-front-black-548283704?$product-details-jpg$",
+      "tagline": "Smart and affordable."
+    }
+  ]
+}
