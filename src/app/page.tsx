@@ -4,20 +4,6 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { MdMic, MdThumbUp, MdThumbDown, MdRefresh } from 'react-icons/md';
 import { FiSend } from 'react-icons/fi';
 
-function getRandomPrice() {
-  return `$${Math.floor(Math.random() * (4000 - 800 + 1) + 800)}`;
-}
-
-function generateBlurb(query: string): string {
-  const lowerQuery = query.toLowerCase();
-  let blurb = "Here are awesome products matching your request";
-  if (lowerQuery.includes('8k')) blurb = "Here are awesome 8K TVs !!!";
-  if (lowerQuery.includes('under') && lowerQuery.includes('$')) {
-    blurb += ` under ${lowerQuery.match(/under\s*\$\d+/i)?.[0] || '$1000'}`;
-  }
-  return blurb;
-}
-
 export default function Home() {
   const [messages, setMessages] = useState<
     { role: 'user' | 'assistant'; content?: string; products?: any[] }[]
@@ -127,7 +113,7 @@ export default function Home() {
 
                   {/* Blurb */}
                   <div className="text-white text-center text-5xl font-bold mt-10">
-                    {generateBlurb(msg.content)}
+                    {stableStorefrontData.blurb}
                   </div>
 
                   {/* Products */}
@@ -208,8 +194,7 @@ function ProductGrid({ products }: { products: any[] }) {
   );
 }
 
-function ProductCard({ name, description, image, large }: any) {
-  const price = getRandomPrice();
+function ProductCard({ name, description, image, price, large }: any) {
   return (
     <div
       className={`
