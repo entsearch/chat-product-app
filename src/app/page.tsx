@@ -131,7 +131,7 @@ export default function Home() {
                       <p className="text-center">{msg.content}</p>
                     </div>
                   </div>
-                  <div className="mt-4 pt-24 text-white text-center text-5xl font-bold">
+                  <div className="mt-8 pt-34 text-white text-center text-5xl font-bold">
                     {generateBlurb(msg.content)}
                   </div>
                   <div className="mt-4 mb-4 p-4">
@@ -175,16 +175,27 @@ export default function Home() {
 
 function ProductGrid({ products }: { products: any[] }) {
   return (
-    <div className="p-2 rounded-3xl shadow-lg">
-      <div className="grid gap-4">
-        <div className="grid grid-cols-2 gap-4">
-          {products.slice(0, 2).map((p, i) => <ProductCard key={i} {...p} />)}
+    <div className="p-6 rounded-3xl shadow-lg">
+      <div className="space-y-6">
+        {/* First row (2 cards) */}
+        <div className="grid grid-cols-2 gap-6">
+          {products.slice(0, 2).map((p, i) => (
+            <ProductCard key={i} {...p} />
+          ))}
         </div>
-        <div className="grid grid-cols-3 gap-4">
-          {products.slice(2, 5).map((p, i) => <ProductCard key={i + 2} {...p} />)}
+
+        {/* Second row (3 cards) */}
+        <div className="grid grid-cols-3 gap-6">
+          {products.slice(2, 5).map((p, i) => (
+            <ProductCard key={i + 2} {...p} />
+          ))}
         </div>
-        <div className="grid grid-cols-1">
-          {products.slice(5, 6).map((p, i) => <ProductCard key={i + 5} {...p} large />)}
+
+        {/* Third row (1 large card, but centered with margin) */}
+        <div className="grid grid-cols-1 gap-6 max-w-5xl mx-auto w-full">
+          {products.slice(5, 6).map((p, i) => (
+            <ProductCard key={i + 5} {...p} large />
+          ))}
         </div>
       </div>
     </div>
@@ -194,16 +205,36 @@ function ProductGrid({ products }: { products: any[] }) {
 function ProductCard({ name, description, image, large }: any) {
   const price = getRandomPrice();
   return (
-    <div className={`bg-white text-black p-4 flex flex-col items-center text-center shadow-md transform transition-transform hover:scale-105 hover:shadow-2xl rounded-xl ${large ? 'w-full' : ''}`}>
-      <img src={image} alt={name} className={`w-full ${large ? 'max-w-full' : 'max-w-lg'} mb-1 rounded-lg object-contain`} />
-      <h2 className="text-xl font-bold mb-0.5">{name}</h2>
-      <p className="text-sm mb-0.5">{description}</p>
-      <p className="text-md font-semibold text-blue-600 mb-1">{price}</p>
-      <div className="flex space-x-2 mt-1">
-        <button className="bg-blue-600 text-white px-3 py-1 rounded-full font-semibold hover:bg-blue-700 transition">Learn more</button>
-        <button className="bg-blue-600 text-white px-3 py-1 rounded-full font-semibold hover:bg-blue-700 transition">Compare</button>
-        <button className="bg-blue-600 text-white px-3 py-1 rounded-full font-semibold hover:bg-blue-700 transition">Add to cart</button>
+    <div
+      className={`
+        bg-white text-black p-4 flex flex-col items-center text-center
+        shadow-md rounded-xl h-full
+        transform transition-transform duration-200
+        hover:scale-105 hover:shadow-2xl
+      `}
+    >
+      <img
+        src={image}
+        alt={name}
+        className={`w-full mb-2 rounded-lg object-contain ${large ? 'max-h-[400px]' : 'max-h-[250px]'}`}
+      />
+      <h2 className="text-xl font-bold mb-1">{name}</h2>
+      <p className="text-sm mb-1">{description}</p>
+      <p className="text-md font-semibold text-blue-600 mb-2">{price}</p>
+      <div className="flex space-x-2 mt-auto">
+        <button className="bg-blue-600 text-white px-3 py-1 rounded-full font-semibold hover:bg-blue-700 transition">
+          Learn more
+        </button>
+        <button className="bg-blue-600 text-white px-3 py-1 rounded-full font-semibold hover:bg-blue-700 transition">
+          Compare
+        </button>
+        <button className="bg-blue-600 text-white px-3 py-1 rounded-full font-semibold hover:bg-blue-700 transition">
+          Add to cart
+        </button>
       </div>
     </div>
   );
 }
+
+
+
