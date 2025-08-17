@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { MdMic } from 'react-icons/md';
+import { MdMic, MdThumbUp, MdThumbDown, MdRefresh } from 'react-icons/md';
 import { FiSend } from 'react-icons/fi';
 
 function getRandomPrice() {
@@ -113,22 +113,17 @@ export default function Home() {
 
           if (isUserQuery && isAssistantResponse) {
             return (
-              <div key={index} className="space-y-6">
-                <div className="bg-black text-white rounded-2xl p-1 space-y-6">
+              <div key={index} className="space-y-6 relative">
+                {/* Black container */}
+                <div className="bg-black text-white rounded-2xl p-4 space-y-6 relative">
                   {/* User bubble */}
                   <div className="flex justify-end mt-0 mr-0">
-                    <div
-                      className="
-                        bg-blue-500 text-white p-3 break-words flex items-center justify-center
-                        w-1/2
-                        min-h-[4.5rem]
-                        rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-none
-                      "
-                    >
+                    <div className="bg-blue-500 text-white p-3 break-words flex items-center justify-center
+                                    w-1/2 min-h-[4.5rem]
+                                    rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-none">
                       <p className="text-center m-0">{msg.content}</p>
                     </div>
                   </div>
-
 
                   {/* Blurb */}
                   <div className="text-white text-center text-5xl font-bold mt-10">
@@ -141,6 +136,13 @@ export default function Home() {
                       <ProductGrid products={nextMsg.products} />
                     </div>
                   )}
+
+                  {/* Action icons at bottom-left */}
+                  <div className="absolute bottom-2 left-2 flex space-x-4">
+                    <MdThumbUp className="text-white text-2xl hover:text-green-400 cursor-pointer" />
+                    <MdThumbDown className="text-white text-2xl hover:text-red-400 cursor-pointer" />
+                    <MdRefresh className="text-white text-2xl hover:text-blue-400 cursor-pointer" />
+                  </div>
                 </div>
               </div>
             );
