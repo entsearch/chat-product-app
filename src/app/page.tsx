@@ -11,98 +11,83 @@ function getRandomPrice() {
 function generateBlurb(query: string): string {
   const lowerQuery = query.toLowerCase();
   let blurb = "Here are awesome products matching your request";
-  if (lowerQuery.includes('8k')) blurb = "Here are awesome 8K TVs";
-  if (lowerQuery.includes('under') && lowerQuery.includes('$')) blurb += ` under ${lowerQuery.match(/under\s*\$\d+/i)?.[0] || '$1000'}`;
+  if (lowerQuery.includes('8k')) blurb = "Here are awesome 8K TVs !!!";
+  if (lowerQuery.includes('under') && lowerQuery.includes('$')) {
+    blurb += ` under ${lowerQuery.match(/under\s*\$\d+/i)?.[0] || '$1000'}`;
+  }
   return blurb;
 }
 
 export default function Home() {
-  const [messages, setMessages] = useState<{ role: 'user' | 'assistant'; content?: string; products?: any[] }[]>([]);
+  const [messages, setMessages] = useState<
+    { role: 'user' | 'assistant'; content?: string; products?: any[] }[]
+  >([]);
   const [input, setInput] = useState('');
   const [typedText, setTypedText] = useState('');
   const [showCursor, setShowCursor] = useState(true);
   const [storefrontData, setStorefrontData] = useState<any>(null);
   const indexRef = useRef(0);
   const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const isTypingCompleteRef = useRef(false); // Track if typing is complete
+  const isTypingCompleteRef = useRef(false);
 
   // Load JSON
   useEffect(() => {
     fetch('/storefront.json')
       .then((res) => res.json())
       .then((data) => {
-        console.log("Fetched storefrontData:", JSON.stringify(data));
         setStorefrontData(data);
       });
   }, []);
 
-  // Memoize storefrontData to prevent unnecessary re-runs
   const stableStorefrontData = useMemo(() => storefrontData, [storefrontData]);
 
-  // Typing effect
+  // Typing effect for welcome
   useEffect(() => {
-    if (!stableStorefrontData || !stableStorefrontData.welcome || !stableStorefrontData.welcome.text) {
-      console.log("storefrontData is invalid:", stableStorefrontData);
-      return;
-    }
+    if (!stableStorefrontData?.welcome?.text) return;
 
-    console.log("useEffect running with storefrontData:", JSON.stringify(stableStorefrontData));
-    console.log("Raw storefrontData.welcome.text:", stableStorefrontData.welcome.text);
-
-    // Only reset if typing hasn't completed
     if (!isTypingCompleteRef.current) {
       setTypedText('');
       setShowCursor(true);
       indexRef.current = 0;
     }
 
-    const fullText = stableStorefrontData.welcome.text.replace(/^"|"$/g, '').replace(/\\/g, '').trim();
+    const fullText = stableStorefrontData.welcome.text
+      .replace(/^"|"$/g, '')
+      .replace(/\\/g, '')
+      .trim();
 
-    // Clear any existing interval
-    if (typingIntervalRef.current) {
-      clearInterval(typingIntervalRef.current);
-    }
+    if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
 
     typingIntervalRef.current = setInterval(() => {
-      if (indexRef.current < fullText.length && fullText[indexRef.current] !== undefined) {
-        const currentIndex = indexRef.current;
-        console.log(`Index: ${currentIndex}, Char: ${fullText[currentIndex]}`);
-        setTypedText((prev) => {
-          const newText = prev + fullText[currentIndex];
-          console.log("typedText:", newText);
-          if (currentIndex === fullText.length - 1) {
-            console.log("Final typedText:", newText);
-            setShowCursor(false);
-            console.log("showCursor set to:", false);
-            isTypingCompleteRef.current = true; // Mark typing as complete
-            if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
-          }
-          return newText;
-        });
+      if (indexRef.current < fullText.length) {
+        const char = fullText[indexRef.current];
+        setTypedText((prev) => prev + char);
         indexRef.current++;
-      } else {
-        console.log("Typing complete, hiding cursor");
-        console.log("Final typedText:", typedText);
-        setShowCursor(false);
-        console.log("showCursor set to:", false);
-        isTypingCompleteRef.current = true;
-        if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
+        if (indexRef.current === fullText.length) {
+          setShowCursor(false);
+          isTypingCompleteRef.current = true;
+          clearInterval(typingIntervalRef.current!);
+        }
       }
-    }, 100); // 100ms for typing speed; change to 50 for faster
+    }, 100);
 
     return () => {
-      console.log("Cleaning up intervals");
       if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
     };
   }, [stableStorefrontData]);
 
   const handleSend = () => {
     if (!input.trim()) return;
-    setMessages([...messages, { role: 'user', content: input }, { role: 'assistant', products: stableStorefrontData?.products }]);
+    setMessages([
+      ...messages,
+      { role: 'user', content: input },
+      { role: 'assistant', products: stableStorefrontData?.products },
+    ]);
     setInput('');
   };
 
-  if (!stableStorefrontData) return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  if (!stableStorefrontData)
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
 
   return (
     <div className="flex flex-col h-screen bg-white">
@@ -112,7 +97,11 @@ export default function Home() {
           {typedText}
           {showCursor && <span className="inline-block animate-pulse">|</span>}
         </h1>
-        {stableStorefrontData.welcome && <p className="text-sm text-gray-500 mt-2">{stableStorefrontData.welcome.subtext}</p>}
+        {stableStorefrontData.welcome && (
+          <p className="text-sm text-gray-500 mt-2">
+            {stableStorefrontData.welcome.subtext}
+          </p>
+        )}
       </div>
 
       {/* Scrollable messages */}
@@ -124,19 +113,34 @@ export default function Home() {
 
           if (isUserQuery && isAssistantResponse) {
             return (
-              <div key={index} className="space-y-4">
-                <div className="bg-black text-white rounded-2xl relative p-0">
-                  <div className="absolute top-0 right-0 mt-1 mr-1 w-1/2">
-                    <div className="bg-blue-500 text-white p-3 break-words flex items-center justify-center min-h-[4.5rem] min-w-[40%] max-w-[100%] rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-none">
-                      <p className="text-center">{msg.content}</p>
+              <div key={index} className="space-y-6">
+                <div className="bg-black text-white rounded-2xl p-1 space-y-6">
+                  {/* User bubble */}
+                  <div className="flex justify-end mt-0 mr-0">
+                    <div
+                      className="
+                        bg-blue-500 text-white p-3 break-words flex items-center justify-center
+                        w-1/2
+                        min-h-[4.5rem]
+                        rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-none
+                      "
+                    >
+                      <p className="text-center m-0">{msg.content}</p>
                     </div>
                   </div>
-                  <div className="mt-8 pt-34 text-white text-center text-5xl font-bold">
+
+
+                  {/* Blurb */}
+                  <div className="text-white text-center text-5xl font-bold mt-10">
                     {generateBlurb(msg.content)}
                   </div>
-                  <div className="mt-4 mb-4 p-4">
-                    <ProductGrid products={nextMsg.products || []} />
-                  </div>
+
+                  {/* Products */}
+                  {nextMsg.products?.length > 0 && (
+                    <div className="p-2">
+                      <ProductGrid products={nextMsg.products} />
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -191,7 +195,7 @@ function ProductGrid({ products }: { products: any[] }) {
           ))}
         </div>
 
-        {/* Third row (1 large card, but centered with margin) */}
+        {/* Third row (1 large card, centered with safe margins) */}
         <div className="grid grid-cols-1 gap-6 max-w-5xl mx-auto w-full">
           {products.slice(5, 6).map((p, i) => (
             <ProductCard key={i + 5} {...p} large />
@@ -216,7 +220,9 @@ function ProductCard({ name, description, image, large }: any) {
       <img
         src={image}
         alt={name}
-        className={`w-full mb-2 rounded-lg object-contain ${large ? 'max-h-[400px]' : 'max-h-[250px]'}`}
+        className={`w-full mb-2 rounded-lg object-contain ${
+          large ? 'max-h-[400px]' : 'max-h-[250px]'
+        }`}
       />
       <h2 className="text-xl font-bold mb-1">{name}</h2>
       <p className="text-sm mb-1">{description}</p>
@@ -235,6 +241,3 @@ function ProductCard({ name, description, image, large }: any) {
     </div>
   );
 }
-
-
-
