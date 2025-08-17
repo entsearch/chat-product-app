@@ -48,7 +48,7 @@ export default function Home() {
       indexRef.current = 0;
     }
 
-    const fullText = stableStorefrontData.welcome.text.replace(/^\\"|\\"$/g, '').replace(/\\/g, '').trim();
+    const fullText = stableStorefrontData.welcome.text.replace(/^"|"$/g, '').replace(/\\/g, '').trim();
 
     console.log("fullText:", JSON.stringify(fullText));
     console.log("fullText length:", fullText.length);
@@ -117,7 +117,7 @@ export default function Home() {
           <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-full p-4 text-center ${
               msg.role === 'user'
-                ? 'bg-blue-500 text-white min-w-[50%] rounded-tl-none rounded-tr-2xl rounded-bl-2xl rounded-br-2xl'
+                ? 'bg-blue-500 text-white min-w-[50%] rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-none'
                 : 'bg-black text-white rounded-2xl'
             }`}>
               {msg.role === 'user' ? <p className="text-center">{msg.content}</p> : <ProductGrid products={msg.products || []} />}
@@ -128,7 +128,7 @@ export default function Home() {
 
       {/* Floating Chat box */}
       <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-[50%]">
-        <div className="flex items-center bg-gray-300 rounded-3xl p-4 shadow-lg">
+        <div className="flex items-center bg-gray-300/30 backdrop-blur-md border border-white/20 rounded-3xl p-4 shadow-lg">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -164,7 +164,7 @@ function ProductGrid({ products }: { products: any[] }) {
         <div className="grid grid-cols-3 gap-8">
           {products.slice(2, 5).map((p, i) => <ProductCard key={i + 2} {...p} />)}
         </div>
-        <div className="flex justify-center">
+        <div className="grid grid-cols-1">
           {products.slice(5, 6).map((p, i) => <ProductCard key={i + 5} {...p} large />)}
         </div>
       </div>
@@ -175,7 +175,7 @@ function ProductGrid({ products }: { products: any[] }) {
 function ProductCard({ name, description, image, large }: any) {
   const price = getRandomPrice();
   return (
-    <div className={`bg-white text-black p-6 flex flex-col items-center text-center shadow-md transform transition-transform hover:scale-105 hover:shadow-2xl ${large ? 'w-2/3' : ''}`}>
+    <div className={`bg-white text-black p-6 flex flex-col items-center text-center shadow-md transform transition-transform hover:scale-105 hover:shadow-2xl rounded-xl ${large ? 'w-full' : ''}`}>
       <img src={image} alt={name} className={`w-full ${large ? 'max-w-2xl' : 'max-w-sm'} mb-4 rounded-lg object-contain`} />
       <h2 className="text-2xl font-bold mb-2">{name}</h2>
       <p className="text-base mb-2">{description}</p>
