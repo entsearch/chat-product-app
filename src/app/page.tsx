@@ -8,6 +8,14 @@ function getRandomPrice() {
   return `$${Math.floor(Math.random() * (4000 - 800 + 1) + 800)}`;
 }
 
+function generateBlurb(query: string): string {
+  const lowerQuery = query.toLowerCase();
+  let blurb = "Here are awesome products matching your request";
+  if (lowerQuery.includes('8k')) blurb = "Here are awesome 8K TVs";
+  if (lowerQuery.includes('under') && lowerQuery.includes('$')) blurb += ` under ${lowerQuery.match(/under\s*\$\d+/i)?.[0] || '$1000'}`;
+  return blurb;
+}
+
 export default function Home() {
   const [messages, setMessages] = useState<{ role: 'user' | 'assistant'; content?: string; products?: any[] }[]>([]);
   const [input, setInput] = useState('');
@@ -49,10 +57,6 @@ export default function Home() {
     }
 
     const fullText = stableStorefrontData.welcome.text.replace(/^"|"$/g, '').replace(/\\/g, '').trim();
-
-    console.log("fullText:", JSON.stringify(fullText));
-    console.log("fullText length:", fullText.length);
-    console.log("fullText characters:", fullText.split('').map((c, i) => `${i}: ${c}`));
 
     // Clear any existing interval
     if (typingIntervalRef.current) {
@@ -112,23 +116,38 @@ export default function Home() {
       </div>
 
       {/* Scrollable messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4 pb-40 mt-6">
-        {messages.map((msg, index) => (
-          <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-full p-4 text-center ${
-              msg.role === 'user'
-                ? 'bg-blue-500 text-white min-w-[50%] rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-none'
-                : 'bg-black text-white rounded-2xl'
-            }`}>
-              {msg.role === 'user' ? <p className="text-center">{msg.content}</p> : <ProductGrid products={msg.products || []} />}
-            </div>
-          </div>
-        ))}
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 pb-40 mt-6">
+        {messages.map((msg, index) => {
+          const isUserQuery = msg.role === 'user';
+          const nextMsg = messages[index + 1];
+          const isAssistantResponse = nextMsg && nextMsg.role === 'assistant';
+
+          if (isUserQuery && isAssistantResponse) {
+            return (
+              <div key={index} className="space-y-4">
+                <div className="bg-black text-white rounded-2xl relative p-0">
+                  <div className="absolute top-0 right-0 mt-1 mr-1 w-1/2">
+                    <div className="bg-blue-500 text-white p-3 break-words flex items-center justify-center min-h-[4.5rem] min-w-[40%] max-w-[100%] rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-none">
+                      <p className="text-center">{msg.content}</p>
+                    </div>
+                  </div>
+                  <div className="mt-4 pt-24 text-white text-center text-5xl font-bold">
+                    {generateBlurb(msg.content)}
+                  </div>
+                  <div className="mt-4 mb-4 p-4">
+                    <ProductGrid products={nextMsg.products || []} />
+                  </div>
+                </div>
+              </div>
+            );
+          }
+          return null;
+        })}
       </div>
 
       {/* Floating Chat box */}
       <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-[50%]">
-        <div className="flex items-center bg-gray-300/30 backdrop-blur-md border border-white/20 rounded-3xl p-4 shadow-lg">
+        <div className="flex items-center bg-gray-700/30 backdrop-blur-md border border-white/20 rounded-3xl p-4 shadow-lg">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -156,12 +175,12 @@ export default function Home() {
 
 function ProductGrid({ products }: { products: any[] }) {
   return (
-    <div className="p-6 rounded-3xl shadow-lg">
-      <div className="grid gap-8">
-        <div className="grid grid-cols-2 gap-8">
+    <div className="p-2 rounded-3xl shadow-lg">
+      <div className="grid gap-4">
+        <div className="grid grid-cols-2 gap-4">
           {products.slice(0, 2).map((p, i) => <ProductCard key={i} {...p} />)}
         </div>
-        <div className="grid grid-cols-3 gap-8">
+        <div className="grid grid-cols-3 gap-4">
           {products.slice(2, 5).map((p, i) => <ProductCard key={i + 2} {...p} />)}
         </div>
         <div className="grid grid-cols-1">
@@ -175,15 +194,15 @@ function ProductGrid({ products }: { products: any[] }) {
 function ProductCard({ name, description, image, large }: any) {
   const price = getRandomPrice();
   return (
-    <div className={`bg-white text-black p-6 flex flex-col items-center text-center shadow-md transform transition-transform hover:scale-105 hover:shadow-2xl rounded-xl ${large ? 'w-full' : ''}`}>
-      <img src={image} alt={name} className={`w-full ${large ? 'max-w-2xl' : 'max-w-sm'} mb-4 rounded-lg object-contain`} />
-      <h2 className="text-2xl font-bold mb-2">{name}</h2>
-      <p className="text-base mb-2">{description}</p>
-      <p className="text-lg font-semibold text-blue-600 mb-4">{price}</p>
-      <div className="flex space-x-4 mt-auto">
-        <button className="bg-blue-600 text-white px-5 py-2 rounded-full font-semibold hover:bg-blue-700 transition">Learn more</button>
-        <button className="bg-blue-600 text-white px-5 py-2 rounded-full font-semibold hover:bg-blue-700 transition">Compare</button>
-        <button className="bg-blue-600 text-white px-5 py-2 rounded-full font-semibold hover:bg-blue-700 transition">Add to cart</button>
+    <div className={`bg-white text-black p-4 flex flex-col items-center text-center shadow-md transform transition-transform hover:scale-105 hover:shadow-2xl rounded-xl ${large ? 'w-full' : ''}`}>
+      <img src={image} alt={name} className={`w-full ${large ? 'max-w-full' : 'max-w-lg'} mb-1 rounded-lg object-contain`} />
+      <h2 className="text-xl font-bold mb-0.5">{name}</h2>
+      <p className="text-sm mb-0.5">{description}</p>
+      <p className="text-md font-semibold text-blue-600 mb-1">{price}</p>
+      <div className="flex space-x-2 mt-1">
+        <button className="bg-blue-600 text-white px-3 py-1 rounded-full font-semibold hover:bg-blue-700 transition">Learn more</button>
+        <button className="bg-blue-600 text-white px-3 py-1 rounded-full font-semibold hover:bg-blue-700 transition">Compare</button>
+        <button className="bg-blue-600 text-white px-3 py-1 rounded-full font-semibold hover:bg-blue-700 transition">Add to cart</button>
       </div>
     </div>
   );
