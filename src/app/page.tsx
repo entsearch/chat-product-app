@@ -223,7 +223,10 @@ function ProductGrid({ products, onLearnMore }: { products: any[]; onLearnMore: 
 }
 
 // ProductCard updated
-function ProductCard({ name, description, image, price, learnMore, large, onLearnMore }: any) {
+function ProductCard({ name, description, image, price, newPrice, large, learnMore, onLearnMore }: any) {
+  const hasDiscount =
+    newPrice && parseFloat(newPrice.replace('$', '')) < parseFloat(price.replace('$', ''));
+
   return (
     <div
       className={`
@@ -242,11 +245,25 @@ function ProductCard({ name, description, image, price, learnMore, large, onLear
       />
       <h2 className="text-xl font-bold mb-1">{name}</h2>
       <p className="text-sm mb-1">{description}</p>
-      <p className="text-md font-semibold text-blue-600 mb-2">{price}</p>
+
+      {/* Price display logic */}
+      <div className="mb-2 flex items-center justify-center space-x-2">
+        {hasDiscount ? (
+          <>
+            <span className="text-2xl font-bold text-blue-600">{newPrice}</span>
+            <span className="text-sm line-through text-black/40">{price}</span>
+          </>
+        ) : (
+          <span className="text-2xl font-bold text-blue-600">{price}</span>
+        )}
+      </div>
+
       <div className="flex space-x-2 mt-auto">
         <button
-          onClick={() => onLearnMore({ name, description, image, learnMore })}
           className="bg-blue-600 text-white px-3 py-1 rounded-full font-semibold hover:bg-blue-700 transition"
+          onClick={() =>
+            onLearnMore({ name, description, image, learnMore, price: hasDiscount ? newPrice : price })
+          }
         >
           Learn more
         </button>
@@ -260,3 +277,4 @@ function ProductCard({ name, description, image, price, learnMore, large, onLear
     </div>
   );
 }
+
