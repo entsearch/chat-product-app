@@ -7,9 +7,7 @@ import { FiSend } from 'react-icons/fi';
 // ------------------- ProductCard -------------------
 function ProductCard({ name, description, image, price, newPrice, large, learnMore, onLearnMore, compareProducts, setCompareProducts }: any) {
   const hasDiscount = newPrice && parseFloat(newPrice.replace('$', '')) < parseFloat(price.replace('$', ''));
-
   const isCompared = compareProducts.find((p: any) => p.name === name);
-
   const isDisabled = !isCompared && compareProducts.length >= 3;
 
   return (
@@ -119,9 +117,7 @@ function ProductGrid({ products, onLearnMore, compareProducts, setCompareProduct
 
 // ------------------- Home Component -------------------
 export default function Home() {
-  const [messages, setMessages] = useState<
-    { role: 'user' | 'assistant'; content?: string; products?: any[] }[]
-  >([]);
+  const [messages, setMessages] = useState<{ role: 'user' | 'assistant'; content?: string; products?: any[] }[]>([]);
   const [input, setInput] = useState('');
   const [typedText, setTypedText] = useState('');
   const [showCursor, setShowCursor] = useState(true);
@@ -130,6 +126,7 @@ export default function Home() {
   const [compareProducts, setCompareProducts] = useState<any[]>([]);
   const [showCompareOverlay, setShowCompareOverlay] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [isCompareMode, setIsCompareMode] = useState(false);
 
   const indexRef = useRef(0);
   const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -153,10 +150,7 @@ export default function Home() {
       indexRef.current = 0;
     }
 
-    const fullText = stableStorefrontData.welcome.text
-      .replace(/^"|"$/g, '')
-      .replace(/\\/g, '')
-      .trim();
+    const fullText = stableStorefrontData.welcome.text.replace(/^"|"$/g, '').replace(/\\/g, '').trim();
 
     if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
 
@@ -180,16 +174,11 @@ export default function Home() {
 
   const handleSend = () => {
     if (!input.trim()) return;
-    setMessages([
-      ...messages,
-      { role: 'user', content: input },
-      { role: 'assistant', products: stableStorefrontData?.products },
-    ]);
+    setMessages([...messages, { role: 'user', content: input }, { role: 'assistant', products: stableStorefrontData?.products }]);
     setInput('');
   };
 
-  if (!stableStorefrontData)
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  if (!stableStorefrontData) return <div className="flex justify-center items-center h-screen">Loading...</div>;
 
   return (
     <div className="flex flex-col h-screen bg-white relative">
@@ -199,9 +188,7 @@ export default function Home() {
           {typedText}
           {showCursor && <span className="inline-block animate-pulse">|</span>}
         </h1>
-        {stableStorefrontData.welcome && (
-          <p className="text-sm text-gray-500 mt-2">{stableStorefrontData.welcome.subtext}</p>
-        )}
+        {stableStorefrontData.welcome && <p className="text-sm text-gray-500 mt-2">{stableStorefrontData.welcome.subtext}</p>}
       </div>
 
       {/* Scrollable messages */}
@@ -216,20 +203,13 @@ export default function Home() {
               <div key={index} className="space-y-6 relative">
                 <div className="bg-black text-white rounded-2xl p-4 space-y-6 relative">
                   <div className="flex justify-end mt-0 mr-0">
-                    <div
-                      className="bg-blue-500 text-white p-3 break-words flex items-center justify-center
-                        w-1/2 min-h-[4.5rem]
-                        rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-none"
-                    >
+                    <div className="bg-blue-500 text-white p-3 break-words flex items-center justify-center w-1/2 min-h-[4.5rem] rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-none">
                       <p className="text-center m-0">{msg.content}</p>
                     </div>
                   </div>
 
-                  <div className="text-white text-center text-5xl font-bold mt-10">
-                    {stableStorefrontData.blurb}
-                  </div>
+                  <div className="text-white text-center text-5xl font-bold mt-10">{stableStorefrontData.blurb}</div>
 
-                  {/* Products */}
                   {nextMsg.products?.length > 0 && (
                     <div className="p-2">
                       <ProductGrid
@@ -258,22 +238,11 @@ export default function Home() {
       {overlayProduct && (
         <div
           className="fixed inset-0 z-50 flex justify-center items-center bg-black/50 backdrop-blur-sm"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setOverlayProduct(null);
-          }}
+          onClick={(e) => e.target === e.currentTarget && setOverlayProduct(null)}
         >
           <div className="bg-white rounded-xl p-6 max-w-3xl w-full relative">
-            <button
-              onClick={() => setOverlayProduct(null)}
-              className="absolute top-4 right-4 text-black text-2xl font-bold hover:text-gray-500"
-            >
-              ×
-            </button>
-            <img
-              src={overlayProduct.image}
-              alt={overlayProduct.name}
-              className="w-full mb-4 rounded-lg object-contain max-h-[400px]"
-            />
+            <button onClick={() => setOverlayProduct(null)} className="absolute top-4 right-4 text-black text-2xl font-bold hover:text-gray-500">×</button>
+            <img src={overlayProduct.image} alt={overlayProduct.name} className="w-full mb-4 rounded-lg object-contain max-h-[400px]" />
             <h2 className="text-3xl font-bold mb-2 text-black">{overlayProduct.description}</h2>
             <p className="text-xl text-gray-700">{overlayProduct.learnMore}</p>
           </div>
@@ -282,23 +251,12 @@ export default function Home() {
 
       {/* Comparison Overlay */}
       {showCompareOverlay && (
-        <div
-          className="fixed inset-0 z-50 flex justify-center items-center bg-black/50 backdrop-blur-sm"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setShowCompareOverlay(false);
-          }}
-        >
+        <div className="fixed inset-0 z-50 flex justify-center items-center bg-black/50 backdrop-blur-sm" onClick={(e) => e.target === e.currentTarget && setShowCompareOverlay(false)}>
           <div className="bg-white rounded-xl p-6 max-w-6xl w-full relative">
-            <button
-              onClick={() => setShowCompareOverlay(false)}
-              className="absolute top-4 right-4 text-black text-2xl font-bold hover:text-gray-500"
-            >
-              ×
-            </button>
+            <button onClick={() => setShowCompareOverlay(false)} className="absolute top-4 right-4 text-black text-2xl font-bold hover:text-gray-500">×</button>
             <div className="flex space-x-6 overflow-x-auto">
               {compareProducts.map((p, i) => {
-                const hasDiscount =
-                  p.newPrice && parseFloat(p.newPrice.replace('$', '')) < parseFloat(p.price.replace('$', ''));
+                const hasDiscount = p.newPrice && parseFloat(p.newPrice.replace('$', '')) < parseFloat(p.price.replace('$', ''));
                 return (
                   <div key={i} className="bg-gray-50 rounded-xl p-4 min-w-[250px] flex flex-col items-center">
                     <img src={p.image} alt={p.name} className="w-full h-40 object-contain rounded-lg mb-2" />
@@ -324,44 +282,29 @@ export default function Home() {
 
       {/* Floating Chat + Compare bar */}
       <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-[60%]">
-        <div
-          className="flex items-center bg-gray-700/30 backdrop-blur-md border border-white/20 rounded-3xl p-3 shadow-lg"
-          style={{ minHeight: '5.2rem' }}
-        >
-          {/* Inner container: images + textarea + compare pill */}
+        <div className="flex items-center bg-gray-700/30 backdrop-blur-md border border-white/20 rounded-3xl p-3 shadow-lg" style={{ minHeight: '5.2rem' }}>
           <div className="flex flex-1 items-center gap-2 bg-white rounded-2xl px-3 py-2">
-            {/* Selected product images */}
             {compareProducts.map((p, i) => (
-              <div
-                key={i}
-                tabIndex={0}
-                className={`w-10 h-10 relative cursor-pointer rounded-lg border ${
-                  selectedIndex === i ? 'border-blue-500 border-2' : 'border-gray-300'
-                }`}
-                onClick={() => setSelectedIndex(i)}
-                onKeyDown={(e) => {
-                  if ((e.key === 'Delete' || e.key === 'Backspace') && selectedIndex === i) {
-                    setCompareProducts((prev) => prev.filter((_, idx) => idx !== i));
-                    setSelectedIndex(null);
-                  }
-                }}
-              >
+              <div key={i} tabIndex={0} className={`w-10 h-10 relative cursor-pointer rounded-lg border ${selectedIndex === i ? 'border-blue-500 border-2' : 'border-gray-300'}`}
+                   onClick={() => setSelectedIndex(i)}
+                   onKeyDown={(e) => {
+                     if ((e.key === 'Delete' || e.key === 'Backspace') && selectedIndex === i) {
+                       setCompareProducts((prev) => prev.filter((_, idx) => idx !== i));
+                       setSelectedIndex(null);
+                     }
+                   }}>
                 <img src={p.image} alt={p.name} className="w-full h-full object-contain rounded-lg" />
               </div>
             ))}
 
-            {/* Textarea */}
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
-                  if (compareProducts.length >= 2) {
-                    setShowCompareOverlay(true);
-                  } else {
-                    handleSend();
-                  }
+                  if (isCompareMode && compareProducts.length >= 2) setShowCompareOverlay(true);
+                  else handleSend();
                 }
                 if ((e.key === 'Delete' || e.key === 'Backspace') && !input && selectedIndex === null) {
                   setCompareProducts((prev) => prev.slice(0, -1));
@@ -372,52 +315,42 @@ export default function Home() {
               placeholder="Explore Samsung TVs..."
             />
 
-            {/* Compare Now pill inside chat bar */}
+            {/* Compare Now pill */}
             {compareProducts.length > 0 && (
               <div
-                className="flex items-center px-3 py-1 rounded-full text-sm font-medium cursor-pointer transition 
-                  bg-blue-600 text-white"
+                className="flex items-center px-3 py-1 rounded-full text-sm font-medium cursor-pointer bg-blue-600 text-white"
                 onClick={() => {
+                  // Launch overlay immediately
                   if (compareProducts.length >= 2) {
                     setShowCompareOverlay(true);
                   }
+                  setIsCompareMode(true); // keep for state if needed
                 }}
               >
                 <span>Compare Now</span>
                 <button
                   className="ml-2 text-white hover:text-gray-200 focus:outline-none"
                   onClick={(e) => {
-                    e.stopPropagation(); 
+                    e.stopPropagation(); // prevent overlay launch
                     setCompareProducts([]); // clear selection
+                    setIsCompareMode(false); // exit compare mode
+                    setShowCompareOverlay(false); // ensure overlay closed
                   }}
                 >
                   ✖
                 </button>
               </div>
             )}
-
           </div>
 
-          {/* Send / Mic buttons */}
           <div className="flex items-center ml-3 space-x-2">
-            <button
-              onClick={() => {
-                if (compareProducts.length >= 2) {
-                  setShowCompareOverlay(true);
-                } else {
-                  handleSend();
-                }
-              }}
-              className="text-blue-500 hover:text-blue-700"
-            >
+            <button onClick={() => { if (isCompareMode && compareProducts.length >= 2) setShowCompareOverlay(true); else handleSend(); }} className="text-blue-500 hover:text-blue-700">
               <FiSend className="w-6 h-6" />
             </button>
-            <button className="text-gray-600 hover:text-gray-800">
-              <MdMic className="w-6 h-6" />
-            </button>
+            <button className="text-gray-600 hover:text-gray-800"><MdMic className="w-6 h-6" /></button>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
+    </div> // closes main wrapper div
+  ); // closes return
+} // closes Home component
