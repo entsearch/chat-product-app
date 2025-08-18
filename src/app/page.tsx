@@ -12,6 +12,7 @@ export default function Home() {
   const [typedText, setTypedText] = useState('');
   const [showCursor, setShowCursor] = useState(true);
   const [storefrontData, setStorefrontData] = useState<any>(null);
+  const [overlayProduct, setOverlayProduct] = useState<any>(null); // <-- new overlay state
   const indexRef = useRef(0);
   const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const isTypingCompleteRef = useRef(false);
@@ -76,7 +77,7 @@ export default function Home() {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
 
   return (
-    <div className="flex flex-col h-screen bg-white">
+    <div className="flex flex-col h-screen bg-white relative">
       {/* Welcome message */}
       <div className="text-center mt-12">
         <h1 className="text-4xl font-bold text-blue-600">
@@ -84,9 +85,7 @@ export default function Home() {
           {showCursor && <span className="inline-block animate-pulse">|</span>}
         </h1>
         {stableStorefrontData.welcome && (
-          <p className="text-sm text-gray-500 mt-2">
-            {stableStorefrontData.welcome.subtext}
-          </p>
+          <p className="text-sm text-gray-500 mt-2">{stableStorefrontData.welcome.subtext}</p>
         )}
       </div>
 
@@ -104,9 +103,11 @@ export default function Home() {
                 <div className="bg-black text-white rounded-2xl p-4 space-y-6 relative">
                   {/* User bubble */}
                   <div className="flex justify-end mt-0 mr-0">
-                    <div className="bg-blue-500 text-white p-3 break-words flex items-center justify-center
+                    <div
+                      className="bg-blue-500 text-white p-3 break-words flex items-center justify-center
                                     w-1/2 min-h-[4.5rem]
-                                    rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-none">
+                                    rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-none"
+                    >
                       <p className="text-center m-0">{msg.content}</p>
                     </div>
                   </div>
@@ -119,7 +120,10 @@ export default function Home() {
                   {/* Products */}
                   {nextMsg.products?.length > 0 && (
                     <div className="p-2">
-                      <ProductGrid products={nextMsg.products} />
+                      <ProductGrid
+                        products={nextMsg.products}
+                        onLearnMore={(product) => setOverlayProduct(product)}
+                      />
                     </div>
                   )}
 
@@ -136,6 +140,34 @@ export default function Home() {
           return null;
         })}
       </div>
+
+      // Learn More Overlay
+      {overlayProduct && (
+        <div
+          className="fixed inset-0 z-50 flex justify-center items-center bg-black/50 backdrop-blur-sm"
+          onClick={(e) => {
+            // Close only if click is outside the content box
+            if (e.target === e.currentTarget) setOverlayProduct(null);
+          }}
+        >
+          <div className="bg-white rounded-xl p-6 max-w-3xl w-full relative">
+            <button
+              onClick={() => setOverlayProduct(null)}
+              className="absolute top-4 right-4 text-black text-2xl font-bold hover:text-gray-500"
+            >
+              ×
+            </button>
+            <img
+              src={overlayProduct.image}
+              alt={overlayProduct.name}
+              className="w-full mb-4 rounded-lg object-contain max-h-[400px]"
+            />
+            <h2 className="text-3xl font-bold mb-2 text-black">{overlayProduct.description}</h2>
+            <p className="text-xl text-gray-700">{overlayProduct.learnMore}</p>
+          </div>
+        </div>
+      )}
+
 
       {/* Floating Chat box */}
       <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-[50%]">
@@ -165,28 +197,24 @@ export default function Home() {
   );
 }
 
-function ProductGrid({ products }: { products: any[] }) {
+// ProductGrid updated
+function ProductGrid({ products, onLearnMore }: { products: any[]; onLearnMore: (p: any) => void }) {
   return (
     <div className="p-6 rounded-3xl shadow-lg">
       <div className="space-y-6">
-        {/* First row (2 cards) */}
         <div className="grid grid-cols-2 gap-6">
           {products.slice(0, 2).map((p, i) => (
-            <ProductCard key={i} {...p} />
+            <ProductCard key={i} {...p} onLearnMore={onLearnMore} />
           ))}
         </div>
-
-        {/* Second row (3 cards) */}
         <div className="grid grid-cols-3 gap-6">
           {products.slice(2, 5).map((p, i) => (
-            <ProductCard key={i + 2} {...p} />
+            <ProductCard key={i + 2} {...p} onLearnMore={onLearnMore} />
           ))}
         </div>
-
-        {/* Third row (1 large card, centered with safe margins) */}
         <div className="grid grid-cols-1 gap-6 max-w-5xl mx-auto w-full">
           {products.slice(5, 6).map((p, i) => (
-            <ProductCard key={i + 5} {...p} large />
+            <ProductCard key={i + 5} {...p} onLearnMore={onLearnMore} large />
           ))}
         </div>
       </div>
@@ -194,7 +222,8 @@ function ProductGrid({ products }: { products: any[] }) {
   );
 }
 
-function ProductCard({ name, description, image, price, large }: any) {
+// ProductCard updated
+function ProductCard({ name, description, image, price, learnMore, large, onLearnMore }: any) {
   return (
     <div
       className={`
@@ -215,7 +244,10 @@ function ProductCard({ name, description, image, price, large }: any) {
       <p className="text-sm mb-1">{description}</p>
       <p className="text-md font-semibold text-blue-600 mb-2">{price}</p>
       <div className="flex space-x-2 mt-auto">
-        <button className="bg-blue-600 text-white px-3 py-1 rounded-full font-semibold hover:bg-blue-700 transition">
+        <button
+          onClick={() => onLearnMore({ name, description, image, learnMore })}
+          className="bg-blue-600 text-white px-3 py-1 rounded-full font-semibold hover:bg-blue-700 transition"
+        >
           Learn more
         </button>
         <button className="bg-blue-600 text-white px-3 py-1 rounded-full font-semibold hover:bg-blue-700 transition">
