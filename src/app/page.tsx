@@ -277,4 +277,3 @@ function ProductCard({ name, description, image, price, newPrice, large, learnMo
     </div>
   );
 }
-
