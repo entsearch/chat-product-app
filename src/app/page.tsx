@@ -12,13 +12,25 @@ function ProductCard({ name, description, image, price, newPrice, large, learnMo
 
   return (
     <div
-      className={`
-        bg-white text-black p-4 flex flex-col items-center text-center
-        shadow-md rounded-xl h-full
-        transform transition-transform duration-200
-        hover:scale-105 hover:shadow-2xl
-      `}
+      className="relative bg-white text-black p-4 flex flex-col items-center text-center shadow-md rounded-xl h-full transform transition-transform duration-200 hover:scale-105 hover:shadow-2xl"
     >
+      {/* Compare link - top right */}
+      <span
+        className={`absolute top-2 right-2 text-blue-600 hover:underline cursor-pointer font-semibold ${
+          isDisabled ? 'text-gray-400 cursor-not-allowed hover:underline-none' : ''
+        }`}
+        onClick={() => {
+          if (isDisabled) return;
+          setCompareProducts((prev: any[]) => {
+            const exists = prev.find((p) => p.name === name);
+            if (exists) return prev.filter((p) => p.name !== name);
+            return [...prev, { name, description, image, price, newPrice }];
+          });
+        }}
+      >
+        {isCompared ? '✓ Compare' : 'Compare'}
+      </span>
+
       <img
         src={image}
         alt={name}
@@ -39,37 +51,27 @@ function ProductCard({ name, description, image, price, newPrice, large, learnMo
         )}
       </div>
 
-      <div className="flex space-x-2 mt-auto">
-        <button
-          className="bg-blue-600 text-white px-3 py-1 rounded-full font-semibold hover:bg-blue-700 transition"
+      {/* Bottom links/buttons */}
+      <div className="flex items-center space-x-6 mt-auto"> {/* items-center ensures vertical alignment */}
+        {/* Learn More link */}
+        <span
+          className="text-blue-600 hover:underline cursor-pointer font-semibold text-lg"
           onClick={() =>
             onLearnMore({ name, description, image, learnMore, price: hasDiscount ? newPrice : price })
           }
         >
-          Learn more
-        </button>
-        <button
-          className={`px-3 py-1 rounded-full font-semibold transition ${
-            isCompared ? 'bg-green-600 text-white' : isDisabled ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'
-          }`}
-          onClick={() => {
-            if (isDisabled) return;
-            setCompareProducts((prev: any[]) => {
-              const exists = prev.find((p) => p.name === name);
-              if (exists) return prev.filter((p) => p.name !== name);
-              return [...prev, { name, description, image, price, newPrice }];
-            });
-          }}
-        >
-          {isCompared ? '✓ Compare' : 'Compare'}
-        </button>
-        <button className="bg-blue-600 text-white px-3 py-1 rounded-full font-semibold hover:bg-blue-700 transition">
-          Add to cart
+          LEARN MORE
+        </span>
+
+        {/* Buy Now button */}
+        <button className="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold text-lg hover:bg-blue-700 transition">
+          BUY NOW
         </button>
       </div>
     </div>
   );
 }
+
 
 // ------------------- ProductGrid -------------------
 function ProductGrid({ products, onLearnMore, compareProducts, setCompareProducts }: any) {
@@ -77,9 +79,9 @@ function ProductGrid({ products, onLearnMore, compareProducts, setCompareProduct
     <div className="p-6 rounded-3xl shadow-lg">
       <div className="space-y-6">
         <div className="grid grid-cols-2 gap-6">
-          {products.slice(0, 2).map((p: any, i: number) => (
+          {products.slice(0, 2).map((p: any) => (
             <ProductCard
-              key={i}
+              key={p.name}
               {...p}
               onLearnMore={onLearnMore}
               compareProducts={compareProducts}
@@ -88,9 +90,9 @@ function ProductGrid({ products, onLearnMore, compareProducts, setCompareProduct
           ))}
         </div>
         <div className="grid grid-cols-3 gap-6">
-          {products.slice(2, 5).map((p: any, i: number) => (
+          {products.slice(2, 5).map((p: any) => (
             <ProductCard
-              key={i + 2}
+              key={p.name}
               {...p}
               onLearnMore={onLearnMore}
               compareProducts={compareProducts}
@@ -99,9 +101,9 @@ function ProductGrid({ products, onLearnMore, compareProducts, setCompareProduct
           ))}
         </div>
         <div className="grid grid-cols-1 gap-6 max-w-5xl mx-auto w-full">
-          {products.slice(5, 6).map((p: any, i: number) => (
+          {products.slice(5, 6).map((p: any) => (
             <ProductCard
-              key={i + 5}
+              key={p.name}
               {...p}
               onLearnMore={onLearnMore}
               compareProducts={compareProducts}
@@ -126,7 +128,7 @@ export default function Home() {
   const [compareProducts, setCompareProducts] = useState<any[]>([]);
   const [showCompareOverlay, setShowCompareOverlay] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [isCompareMode, setIsCompareMode] = useState(false);
+  const [userClosedCompare, setUserClosedCompare] = useState(false);
 
   const indexRef = useRef(0);
   const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -171,6 +173,7 @@ export default function Home() {
       if (typingIntervalRef.current) clearInterval(typingIntervalRef.current);
     };
   }, [stableStorefrontData]);
+
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -240,7 +243,7 @@ export default function Home() {
           className="fixed inset-0 z-50 flex justify-center items-center bg-black/50 backdrop-blur-sm"
           onClick={(e) => e.target === e.currentTarget && setOverlayProduct(null)}
         >
-          <div className="bg-white rounded-xl p-6 max-w-3xl w-full relative">
+          <div className="bg-white rounded-3xl p-6 max-w-3xl w-full relative">
             <button onClick={() => setOverlayProduct(null)} className="absolute top-4 right-4 text-black text-2xl font-bold hover:text-gray-500">×</button>
             <img src={overlayProduct.image} alt={overlayProduct.name} className="w-full mb-4 rounded-lg object-contain max-h-[400px]" />
             <h2 className="text-3xl font-bold mb-2 text-black">{overlayProduct.description}</h2>
@@ -251,14 +254,30 @@ export default function Home() {
 
       {/* Comparison Overlay */}
       {showCompareOverlay && (
-        <div className="fixed inset-0 z-50 flex justify-center items-center bg-black/50 backdrop-blur-sm" onClick={(e) => e.target === e.currentTarget && setShowCompareOverlay(false)}>
+        <div
+          className="fixed inset-0 z-50 flex justify-center items-center bg-black/50 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowCompareOverlay(false);
+              setUserClosedCompare(true);
+            }
+          }}
+        >
           <div className="bg-white rounded-xl p-6 max-w-6xl w-full relative">
-            <button onClick={() => setShowCompareOverlay(false)} className="absolute top-4 right-4 text-black text-2xl font-bold hover:text-gray-500">×</button>
+            <button
+              onClick={() => {
+                setShowCompareOverlay(false);
+                setUserClosedCompare(true);
+              }}
+              className="absolute top-4 right-4 text-black text-2xl font-bold hover:text-gray-500"
+            >
+              ×
+            </button>
             <div className="flex space-x-6 overflow-x-auto">
               {compareProducts.map((p, i) => {
                 const hasDiscount = p.newPrice && parseFloat(p.newPrice.replace('$', '')) < parseFloat(p.price.replace('$', ''));
                 return (
-                  <div key={i} className="bg-gray-50 rounded-xl p-4 min-w-[250px] flex flex-col items-center">
+                  <div key={p.name} className="bg-gray-50 rounded-xl p-4 min-w-[250px] flex flex-col items-center">
                     <img src={p.image} alt={p.name} className="w-full h-40 object-contain rounded-lg mb-2" />
                     <h2 className="text-xl font-bold mb-1">{p.name}</h2>
                     <p className="text-sm mb-1">{p.description}</p>
@@ -285,14 +304,18 @@ export default function Home() {
         <div className="flex items-center bg-gray-700/30 backdrop-blur-md border border-white/20 rounded-3xl p-3 shadow-lg" style={{ minHeight: '5.2rem' }}>
           <div className="flex flex-1 items-center gap-2 bg-white rounded-2xl px-3 py-2">
             {compareProducts.map((p, i) => (
-              <div key={i} tabIndex={0} className={`w-10 h-10 relative cursor-pointer rounded-lg border ${selectedIndex === i ? 'border-blue-500 border-2' : 'border-gray-300'}`}
-                   onClick={() => setSelectedIndex(i)}
-                   onKeyDown={(e) => {
-                     if ((e.key === 'Delete' || e.key === 'Backspace') && selectedIndex === i) {
-                       setCompareProducts((prev) => prev.filter((_, idx) => idx !== i));
-                       setSelectedIndex(null);
-                     }
-                   }}>
+              <div
+                key={p.name}
+                tabIndex={0}
+                className={`w-10 h-10 relative cursor-pointer rounded-lg border ${selectedIndex === i ? 'border-blue-500 border-2' : 'border-gray-300'}`}
+                onClick={() => setSelectedIndex(i)}
+                onKeyDown={(e) => {
+                  if ((e.key === 'Delete' || e.key === 'Backspace') && selectedIndex === i) {
+                    setCompareProducts((prev) => prev.filter((_, idx) => idx !== i));
+                    setSelectedIndex(null);
+                  }
+                }}
+              >
                 <img src={p.image} alt={p.name} className="w-full h-full object-contain rounded-lg" />
               </div>
             ))}
@@ -303,7 +326,7 @@ export default function Home() {
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
-                  if (isCompareMode && compareProducts.length >= 2) setShowCompareOverlay(true);
+                  if (compareProducts.length >= 2) setShowCompareOverlay(true);
                   else handleSend();
                 }
                 if ((e.key === 'Delete' || e.key === 'Backspace') && !input && selectedIndex === null) {
@@ -311,30 +334,30 @@ export default function Home() {
                 }
               }}
               rows={1}
-              className="flex-1 resize-none focus:outline-none bg-transparent px-2 py-1 rounded-2xl"
+              className="flex-1 resize-none focus:outline-none bg-transparent px-2 py-1 rounded-2xl text-black placeholder-gray-500"
               placeholder="Explore Samsung TVs..."
             />
 
             {/* Compare Now pill */}
             {compareProducts.length > 0 && (
               <div
-                className="flex items-center px-3 py-1 rounded-full text-sm font-medium cursor-pointer bg-blue-600 text-white"
+                role="button"
+                aria-disabled={compareProducts.length < 2}
+                className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                  compareProducts.length >= 2 ? 'bg-blue-600 text-white cursor-pointer' : 'bg-gray-400 text-white cursor-not-allowed opacity-70'
+                }`}
                 onClick={() => {
-                  // Launch overlay immediately
-                  if (compareProducts.length >= 2) {
-                    setShowCompareOverlay(true);
-                  }
-                  setIsCompareMode(true); // keep for state if needed
+                  if (compareProducts.length >= 2) setShowCompareOverlay(true);
                 }}
               >
                 <span>Compare Now</span>
                 <button
                   className="ml-2 text-white hover:text-gray-200 focus:outline-none"
                   onClick={(e) => {
-                    e.stopPropagation(); // prevent overlay launch
-                    setCompareProducts([]); // clear selection
-                    setIsCompareMode(false); // exit compare mode
-                    setShowCompareOverlay(false); // ensure overlay closed
+                    e.stopPropagation();
+                    setCompareProducts([]);
+                    setShowCompareOverlay(false);
+                    setUserClosedCompare(false);
                   }}
                 >
                   ✖
@@ -344,13 +367,19 @@ export default function Home() {
           </div>
 
           <div className="flex items-center ml-3 space-x-2">
-            <button onClick={() => { if (isCompareMode && compareProducts.length >= 2) setShowCompareOverlay(true); else handleSend(); }} className="text-blue-500 hover:text-blue-700">
+            <button
+              onClick={() => {
+                if (compareProducts.length >= 2) setShowCompareOverlay(true);
+                else handleSend();
+              }}
+              className="text-blue-500 hover:text-blue-700"
+            >
               <FiSend className="w-6 h-6" />
             </button>
             <button className="text-gray-600 hover:text-gray-800"><MdMic className="w-6 h-6" /></button>
           </div>
         </div>
       </div>
-    </div> // closes main wrapper div
-  ); // closes return
-} // closes Home component
+    </div>
+  );
+}
