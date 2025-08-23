@@ -27,7 +27,7 @@ export default function ProductCard({
     ? 'text-green-600 opacity-100 cursor-pointer'
     : maxComparisonsReached
     ? 'opacity-0 pointer-events-none'
-    : 'opacity-0 hover:opacity-100';
+    : 'opacity-0 group-hover:opacity-100 cursor-pointer';
   
   const style = maxComparisonsReached && !isCompared ? { opacity: 0 } : {};
   
