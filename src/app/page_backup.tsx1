@@ -1,0 +1,322 @@
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
+import { MdMic } from 'react-icons/md';
+import { FiSend } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// Mock LLM response (replace with API call)
+const mockLLMResponse = (query: string) => {
+  const baseCards = [
+    { id: 'tv1', name: 'Neo OLED 4K', image: 'https://images.samsung.com/is/image/samsung/p6pim/us/qn75qn1efafxza/gallery/us-neo-qled-qn75qn1efafxza-front-black-546228291?$product-details-jpg$', specs: { size: '65in', refresh_rate: '120Hz', price: '$999' }, learn_more: 'QLED offers vibrant colors...' },
+    { id: 'tv2', name: 'Samsung QLED TV', image: 'https://image-us.samsung.com/SamsungUS/home/television-home-theater/tvs/the-terrace/08272024/QN55LST7DAFXZA_007_Front3_Titan_Black_Scom_1600x1200.jpg?$product-details-jpg$', specs: { size: '75in', refresh_rate: '120Hz', price: '$1499' }, learn_more: 'OLED delivers deep blacks...' },
+    { id: 'tv3', name: 'Neo QLED 4K', image: 'https://image-us.samsung.com/SamsungUS/home/television-home-theater/tvs/the-terrace/08262024/QN55LST7DAFXZA_007_Front3_Titan_Black_Scom_1600x1200.jpg?$product-details-jpg$', specs: { size: '55in', refresh_rate: '60Hz', price: '$799' }, learn_more: '4K for sharp visuals...' },
+    { id: 'tv4', name: 'Vision AI Smart TV', image: 'https://images.samsung.com/is/image/samsung/p6pim/us/qn75qef1afxza/gallery/us-qled-qef1-548500-qn75qef1afxza-547033885?$product-details-jpg$', specs: { size: '65in', refresh_rate: '120Hz', price: '$999' }, learn_more: 'QLED offers vibrant colors...' },
+    { id: 'tv5', name: 'QLED 4K QE1D', image: 'https://image-us.samsung.com/SamsungUS/home/television-home-theater/tvs/qled-4k-tvs/0715202439102/70_65-S.COM_Version_1_V01.jpg?$product-details-jpg$', specs: { size: '75in', refresh_rate: '120Hz', price: '$1499' }, learn_more: 'OLED delivers deep blacks...' },
+    { id: 'tv6', name: 'Crystal UHD U7900F', image: 'https://images.samsung.com/is/image/samsung/p6pim/us/un58u7900ffxza/gallery/us-uhd-4k-tv-un58u7900ffxza-front-black-548283704?$product-details-jpg$', specs: { size: '55in', refresh_rate: '60Hz', price: '$799' }, learn_more: '4K for sharp visuals...' },
+  ];
+
+  // Parse query for filters or actions
+  let cards = baseCards;
+  let comparison = null;
+  let response_text = `Found ${cards.length} TVs matching "${query}":`;
+  let proactive_tip = query.includes('gaming') ? null : 'Would you like to learn about OLED technology or gaming TVs?';
+
+  // Filter by price, size, or refresh rate
+  if (query.toLowerCase().includes('under $1000')) {
+    cards = baseCards.filter((tv) => parseFloat(tv.specs.price.replace('$', '')) < 1000);
+    response_text = `Found ${cards.length} TVs under $1000:`;
+  } else if (query.toLowerCase().includes('75 inches')) {
+    cards = baseCards.filter((tv) => tv.specs.size.includes('75in'));
+    response_text = `Found ${cards.length} TVs over 75 inches:`;
+  } else if (query.toLowerCase().includes('120hz')) {
+    cards = baseCards.filter((tv) => tv.specs.refresh_rate.includes('120Hz'));
+    response_text = `Found ${cards.length} TVs with 120Hz refresh rate:`;
+  }
+
+  // Handle comparison or selection actions
+  if (query.toLowerCase().includes('compare') || query.toLowerCase().includes('selected tvs')) {
+    const tvNames = query.match(/Neo OLED 4K|Samsung QLED TV|Neo QLED 4K|Vision AI Smart TV|QLED 4K QE1D|Crystal UHD U7900F/gi) || [];
+    const selectedTVs = baseCards.filter((tv) => tvNames.includes(tv.name)).slice(0, 3);
+    comparison = selectedTVs.length >= 2 ? selectedTVs : null;
+    response_text = comparison ? `Comparing ${selectedTVs.length} TVs:` : 'Please select at least 2 TVs to compare.';
+    cards = []; // No cards in comparison response—show in sheet
+    proactive_tip = selectedTVs.length < 2 ? 'Add more TVs to compare (e.g., "add Neo OLED 4K to comparison").' : null;
+  } else if (query.toLowerCase().includes('add') && query.toLowerCase().includes('comparison')) {
+    const tvName = query.match(/Neo OLED 4K|Samsung QLED TV|Neo QLED 4K|Vision AI Smart TV|QLED 4K QE1D|Crystal UHD U7900F/i)?.[0];
+    const tv = baseCards.find((tv) => tv.name === tvName);
+    response_text = tv ? `Added ${tvName} to comparison.` : `TV not found. Try again (e.g., "add Samsung QLED TV").`;
+    cards = [];
+    proactive_tip = 'Add up to 3 TVs and say "compare selected TVs" to view comparison.';
+  } else if (query.toLowerCase().includes('remove') && query.toLowerCase().includes('comparison')) {
+    const tvName = query.match(/Neo OLED 4K|Samsung QLED TV|Neo QLED 4K|Vision AI Smart TV|QLED 4K QE1D|Crystal UHD U7900F/i)?.[0];
+    response_text = tvName ? `Removed ${tvName} from comparison.` : `TV not found.`;
+    cards = [];
+    proactive_tip = 'Add or compare TVs to continue.';
+  }
+
+  return {
+    response_text,
+    cards,
+    proactive_tip,
+    comparison,
+  };
+};
+
+// ProductCard Component
+function ProductCard({ id, name, image, specs, learn_more, onLearnMore, onCompare, isCompared }: any) {
+  return (
+    <motion.div
+      className="bg-gray-800 text-white p-6 rounded-xl flex flex-col items-center text-center h-full relative group"
+      whileHover={{ scale: 1.05, boxShadow: '0 10px 20px rgba(0, 122, 255, 0.3)' }}
+      transition={{ duration: 0.2 }}
+    >
+      <span
+        className={`absolute top-2 right-2 text-blue-400 hover:text-blue-300 cursor-pointer font-semibold text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${isCompared ? 'text-green-400' : ''}`}
+        onClick={() => onCompare({ id, name, image, specs, learn_more })}
+      >
+        {isCompared ? '✓ Compare' : 'Compare'}
+      </span>
+      <img src={image} alt={name} className="w-full h-[300px] object-contain rounded-lg mb-4" />
+      <h2 className="text-2xl font-bold mb-2">{name}</h2>
+      <p className="text-sm mb-2">{Object.entries(specs).map(([k, v]) => `${k}: ${v}`).join(' • ')}</p>
+      <span
+        className="text-blue-400 hover:text-blue-300 cursor-pointer font-semibold text-lg"
+        onClick={() => onLearnMore({ id, name, image, learn_more, specs })}
+      >
+        Learn More
+      </span>
+    </motion.div>
+  );
+}
+
+// ChatResponse Component
+function ChatResponse({ message, index, onLearnMore, onCompare, compareProducts }: any) {
+  return (
+    <motion.div
+      className="space-y-4"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="bg-gray-700 text-white p-4 rounded-tl-2xl rounded-tr-2xl rounded-br-2xl w-3/4">
+        <p>{message.response_text}</p>
+        {message.proactive_tip && (
+          <p className="mt-2 italic text-blue-300">{message.proactive_tip}</p>
+        )}
+      </div>
+      {message.cards?.length > 0 && (
+        <div className="grid grid-cols-3 gap-6 max-w-6xl mx-auto">
+          {message.cards.map((p: any) => (
+            <ProductCard
+              key={p.id}
+              {...p}
+              onLearnMore={onLearnMore}
+              onCompare={onCompare}
+              isCompared={compareProducts.some((cp: any) => cp.id === p.id)}
+            />
+          ))}
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
+// Home Component
+export default function Home() {
+  const [messages, setMessages] = useState<
+    { role: 'user' | 'assistant'; content?: string; response_text?: string; cards?: any[]; proactive_tip?: string; comparison?: any[] }[]
+  >([]);
+  const [input, setInput] = useState('');
+  const [sheetProduct, setSheetProduct] = useState<any>(null);
+  const [compareProducts, setCompareProducts] = useState<any[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleSend = () => {
+    if (!input.trim()) return;
+    const llmResponse = mockLLMResponse(input);
+    setMessages([
+      ...messages,
+      { role: 'user', content: input },
+      { role: 'assistant', ...llmResponse },
+    ]);
+    // Handle comparison selections via NL
+    if (input.toLowerCase().includes('add') && input.toLowerCase().includes('comparison')) {
+      const tvName = input.match(/Neo OLED 4K|Samsung QLED TV|Neo QLED 4K|Vision AI Smart TV|QLED 4K QE1D|Crystal UHD U7900F/i)?.[0];
+      if (tvName) {
+        const tv = mockLLMResponse('').cards.find((t) => t.name === tvName);
+        if (tv && compareProducts.length < 3 && !compareProducts.some((cp) => cp.id === tv.id)) {
+          setCompareProducts([...compareProducts, tv]);
+        }
+      }
+    } else if (input.toLowerCase().includes('remove') && input.toLowerCase().includes('comparison')) {
+      const tvName = input.match(/Neo OLED 4K|Samsung QLED TV|Neo QLED 4K|Vision AI Smart TV|QLED 4K QE1D|Crystal UHD U7900F/i)?.[0];
+      if (tvName) {
+        setCompareProducts(compareProducts.filter((cp) => cp.name !== tvName));
+      }
+    } else if (input.toLowerCase().includes('compare') && compareProducts.length >= 2) {
+      setSheetProduct({ comparison: true, tvs: compareProducts });
+    }
+    setInput('');
+    inputRef.current?.focus();
+  };
+
+  const handleCompareToggle = (product: any) => {
+    if (compareProducts.some((cp) => cp.id === product.id)) {
+      setCompareProducts(compareProducts.filter((cp) => cp.id !== product.id));
+    } else if (compareProducts.length < 3) {
+      setCompareProducts([...compareProducts, product]);
+    }
+  };
+
+  const handleClearComparisons = () => {
+    setCompareProducts([]);
+    setSheetProduct(null);
+  };
+
+  return (
+    <div className="flex flex-col h-screen bg-gray-900 text-white">
+      {/* Header */}
+      <div className="text-center mt-12">
+        <h1 className="text-5xl font-bold text-blue-400">Discover Your Perfect TV</h1>
+        <p className="text-lg text-gray-400 mt-2">Ask anything about TVs—I'm here to help!</p>
+      </div>
+
+      {/* Chat Response Area */}
+      <div className="flex-1 overflow-y-auto p-8 space-y-8 pb-40">
+        <AnimatePresence>
+          {messages.map((msg, index) => (
+            msg.role === 'user' ? (
+              <motion.div
+                key={index}
+                className="flex justify-end"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="bg-blue-500 text-white p-4 rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl w-3/4">
+                  {msg.content}
+                </div>
+              </motion.div>
+            ) : (
+              <ChatResponse
+                key={index}
+                message={msg}
+                index={index}
+                onLearnMore={setSheetProduct}
+                onCompare={handleCompareToggle}
+                compareProducts={compareProducts}
+              />
+            )
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {/* Detail/Comparison Sheet */}
+      <AnimatePresence>
+        {sheetProduct && (
+          <motion.div
+            className="fixed top-0 right-0 h-full w-1/3 bg-gray-800 p-6 overflow-y-auto shadow-2xl"
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ duration: 0.3 }}
+          >
+            <button
+              className="absolute top-4 right-4 text-2xl text-gray-400 hover:text-white"
+              onClick={() => setSheetProduct(null)}
+            >
+              ×
+            </button>
+            {sheetProduct.comparison ? (
+              <div className="space-y-6">
+                <h2 className="text-3xl font-bold">Compare TVs</h2>
+                <div className="grid grid-cols-2 gap-4">
+                  {sheetProduct.tvs.map((tv: any) => (
+                    <div key={tv.id} className="bg-gray-700 p-4 rounded-xl">
+                      <img src={tv.image} alt={tv.name} className="w-full h-[200px] object-contain rounded-lg mb-2" />
+                      <h3 className="text-xl font-bold">{tv.name}</h3>
+                      <p className="text-sm">{Object.entries(tv.specs).map(([k, v]) => `${k}: ${v}`).join(' • ')}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <h2 className="text-3xl font-bold">{sheetProduct.name}</h2>
+                <img src={sheetProduct.image} alt={sheetProduct.name} className="w-full h-[400px] object-contain rounded-lg" />
+                <p className="text-lg">{sheetProduct.learn_more}</p>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Chat Bar */}
+      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-3/4 bg-gray-800 border border-gray-700 rounded-3xl p-4 shadow-lg flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <AnimatePresence>
+            {compareProducts.map((tv, i) => (
+              <motion.div
+                key={tv.id}
+                className="relative"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <img
+                  src={tv.image}
+                  alt={tv.name}
+                  className="w-10 h-10 rounded-full object-contain"
+                />
+                <button
+                  className="absolute -top-1 -right-1 text-xs text-white bg-gray-600 rounded-full w-4 h-4 flex items-center justify-center"
+                  onClick={() => setCompareProducts(compareProducts.filter((cp) => cp.id !== tv.id))}
+                >
+                  ×
+                </button>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+        <input
+          ref={inputRef}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+          className="flex-1 bg-gray-700 text-white px-4 py-3 rounded-2xl text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 mx-3"
+          placeholder="Ask about TVs (e.g., 'add Samsung QLED TV to comparison')..."
+          disabled={compareProducts.length >= 2} // Disable input when Compare Now is active
+        />
+        <div className="flex items-center space-x-2">
+          {compareProducts.length > 0 && (
+            <div
+              className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                compareProducts.length >= 2 ? 'bg-blue-600 text-white cursor-pointer' : 'bg-gray-400 text-white opacity-70 cursor-not-allowed'
+              }`}
+              onClick={() => compareProducts.length >= 2 && setSheetProduct({ comparison: true, tvs: compareProducts })}
+            >
+              <span>Compare Now</span>
+              <button
+                className="ml-2 text-white hover:text-gray-200 focus:outline-none"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleClearComparisons();
+                }}
+              >
+                ✖
+              </button>
+            </div>
+          )}
+          <button onClick={handleSend} className="text-blue-400 hover:text-blue-300">
+            <FiSend className="w-6 h-6" />
+          </button>
+          <button className="text-blue-400 hover:text-blue-300">
+            <MdMic className="w-6 h-6" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
