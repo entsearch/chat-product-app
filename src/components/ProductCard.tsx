@@ -12,37 +12,93 @@ interface ProductCardProps {
   maxComparisonsReached: boolean;
 }
 
-export default function ProductCard({ id, name, image, specs, learn_more, onLearnMore, onCompare, isCompared, maxComparisonsReached }: ProductCardProps) {
+export default function ProductCard({ 
+  id, 
+  name, 
+  image, 
+  specs, 
+  learn_more, 
+  onLearnMore, 
+  onCompare, 
+  isCompared, 
+  maxComparisonsReached 
+}: ProductCardProps) {
   const compareClass = isCompared
-    ? 'text-green-400 opacity-100 cursor-pointer'
+    ? 'text-green-600 opacity-100 cursor-pointer'
     : maxComparisonsReached
     ? 'opacity-0 pointer-events-none'
     : 'opacity-0 hover:opacity-100';
-
+  
   const style = maxComparisonsReached && !isCompared ? { opacity: 0 } : {};
-
+  
   return (
     <motion.div
-      className="bg-gray-800 text-white p-6 rounded-xl flex flex-col items-center text-center h-full relative group"
-      whileHover={{ scale: 1.05, boxShadow: '0 10px 20px rgba(0, 122, 255, 0.3)' }}
+      className="bg-white text-black p-8 rounded-3xl flex flex-col items-center text-center h-full relative group border border-gray-300"
+      style={{
+        background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
+        backdropFilter: 'blur(10px)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+      }}
+      whileHover={{ 
+        scale: 1.02,
+        background: 'linear-gradient(145deg, #f8f9fa, #e9ecef)',
+      }}
       transition={{ duration: 0.2 }}
     >
+      <div className="w-full h-72 flex items-center justify-center mb-6 overflow-hidden relative mt-8">
+        <img 
+          src={image} 
+          alt={name} 
+          className="w-full h-full object-contain rounded-xl"
+          style={{ objectFit: 'contain' }}
+        />
+      </div>
+      
       <span
-        className={`absolute top-2 right-2 text-blue-400 ${compareClass}`}
+        className={`absolute top-4 right-4 text-blue-600 text-base font-medium z-10 cursor-pointer ${compareClass}`}
         style={style}
-        onClick={() => !maxComparisonsReached && !isCompared && onCompare({ id, name, image, specs, learn_more })}
+        onClick={() => {
+          if (isCompared) {
+            // Remove from comparison if already compared
+            onCompare({ id, name, image, specs, learn_more, remove: true });
+          } else if (!maxComparisonsReached) {
+            // Add to comparison if not at max limit
+            onCompare({ id, name, image, specs, learn_more });
+          }
+        }}
       >
         {isCompared ? '✓ Compare' : 'Compare'}
       </span>
-      <img src={image} alt={name} className="w-full h-[300px] object-contain rounded-lg mb-4" />
-      <h2 className="text-2xl font-bold mb-2">{name}</h2>
-      <p className="text-sm mb-2">{Object.entries(specs).map(([k, v]) => `${k}: ${v}`).join(' • ')}</p>
-      <span
-        className="text-blue-400 hover:text-blue-300 cursor-pointer font-semibold text-lg"
-        onClick={() => onLearnMore({ id, name, image, learn_more, specs })}
-      >
-        Learn More
-      </span>
+      
+      <h2 className="text-2xl font-bold mb-4 line-clamp-2 leading-tight text-black">{name}</h2>
+      <p className="text-base mb-6 text-black flex-grow leading-relaxed">
+        {Object.entries(specs).map(([k, v]) => `${k}: ${v}`).join(' • ')}
+      </p>
+      
+      <div className="flex justify-center items-center gap-6 mt-auto w-full">
+        <span
+          className="text-blue-600 hover:text-blue-700 cursor-pointer font-semibold text-lg transition-colors duration-200"
+          onClick={(e) => {
+            e.stopPropagation();
+            // Toggle sheet - if same product is already open, close it
+            const currentProduct = { id, name, image, learn_more, specs };
+            onLearnMore(currentProduct);
+          }}
+        >
+          Learn More
+        </span>
+        
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg py-3 px-6 rounded-xl transition-colors duration-200"
+          onClick={(e) => {
+            e.stopPropagation();
+            // Add your buy now functionality here
+            console.log('Buy Now clicked for:', name);
+          }}
+        >
+          BUY NOW
+        </button>
+      </div>
     </motion.div>
   );
 }

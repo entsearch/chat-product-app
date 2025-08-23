@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ChatResponse from '../components/ChatResponse';
@@ -17,12 +16,14 @@ export default function Home() {
 
   const handleSend = () => {
     if (!input.trim()) return;
+
     const llmResponse = mockLLMResponse(input);
     setMessages([
       ...messages,
       { role: 'user', content: input },
-      { role: 'assistant', ...llmResponse },
+      { role: 'assistant', ...llmResponse } as any,
     ]);
+
     if (input.toLowerCase().includes('add') && input.toLowerCase().includes('comparison')) {
       const tvName = input.match(/Neo OLED 4K|Samsung QLED TV|Neo QLED 4K|Vision AI Smart TV|QLED 4K QE1D|Crystal UHD U7900F/i)?.[0];
       if (tvName) {
@@ -39,6 +40,7 @@ export default function Home() {
     } else if (input.toLowerCase().includes('compare') && compareProducts.length >= 2) {
       setSheetProduct({ comparison: true, tvs: compareProducts });
     }
+
     setInput('');
   };
 
@@ -50,40 +52,51 @@ export default function Home() {
     }
   };
 
+  const handleLearnMore = (product: any) => {
+    if (sheetProduct && sheetProduct.id === product.id && !sheetProduct.comparison) {
+      setSheetProduct(null); // Close if same product is already open
+    } else {
+      setSheetProduct(product); // Open new product
+    }
+  };
+
   return (
-    <div className="flex flex-col h-screen bg-gray-900 text-white">
+    <div className="flex flex-col h-screen bg-white text-black">
       <div className="text-center mt-12">
-        <h1 className="text-5xl font-bold text-blue-400">Discover Your Perfect TV</h1>
-        <p className="text-lg text-gray-400 mt-2">Ask anything about TVs—I'm here to help!</p>
+        <h1 className="text-5xl font-bold text-blue-600">Discover Your Perfect TV</h1>
+        <p className="text-lg text-gray-600 mt-2">Ask anything about TVs—I'm here to help!</p>
       </div>
+
       <div className="flex-1 overflow-y-auto p-8 space-y-8 pb-40">
         <AnimatePresence>
           {messages.map((msg, index) => (
             msg.role === 'user' ? (
               <motion.div
                 key={index}
-                className="flex justify-end"
+                className="flex justify-end pr-8"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="bg-blue-500 text-white p-4 rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl w-3/4">
-                  {msg.content}
+                <div className="bg-blue-600 text-white p-6 rounded-3xl w-[50%] shadow-lg">
+                  <p className="text-lg leading-relaxed">{msg.content}</p>
                 </div>
               </motion.div>
             ) : (
               <ChatResponse
                 key={index}
-                message={msg}
+                message={msg as any}
                 index={index}
-                onLearnMore={setSheetProduct}
+                onLearnMore={handleLearnMore}
                 onCompare={handleCompareToggle}
                 compareProducts={compareProducts}
+                sheetOpen={!!sheetProduct}
               />
             )
           ))}
         </AnimatePresence>
       </div>
+
       <ChatBar
         input={input}
         setInput={setInput}
