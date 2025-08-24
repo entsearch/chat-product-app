@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRef } from 'react'; // Import useRef
 import ProductCard from './ProductCard';
 
 interface ChatResponseProps {
@@ -15,8 +16,11 @@ interface ChatResponseProps {
 }
 
 export default function ChatResponse({ message, index, onLearnMore, onCompare, compareProducts, sheetOpen }: ChatResponseProps) {
+  const responseRef = useRef<HTMLDivElement>(null); // Create a ref for the motion.div
+
   return (
     <motion.div
+      ref={responseRef} // Attach the ref to the motion.div
       className="bg-gray-900 rounded-3xl p-6 w-full max-w-[95%] mx-auto mb-8 shadow-xl border border-gray-700"
       style={{
         background: 'linear-gradient(145deg, #1a1a1a, #2a2a2a)',
@@ -25,6 +29,13 @@ export default function ChatResponse({ message, index, onLearnMore, onCompare, c
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
+      onAnimationComplete={() => {
+        // Scroll to the top of the response when animation completes
+        responseRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }}
     >
       <div 
         className="bg-blue-600 text-white p-6 rounded-3xl flex flex-col shadow-lg mr-2 mt-1 max-w-[50%]"

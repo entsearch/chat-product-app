@@ -14,18 +14,18 @@ interface ChatBarProps {
 
 export default function ChatBar({ input, setInput, handleSend, compareProducts, setCompareProducts, setSheetProduct }: ChatBarProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-
+  
   const handleClearComparisons = () => {
     setCompareProducts([]);
     setSheetProduct(null);
   };
-
+  
   const isCompareMode = compareProducts.length >= 1;
-
+  
   return (
-    <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-3/4 bg-gray-800 border border-gray-700 rounded-3xl p-4 shadow-lg flex flex-col items-stretch">
-      <div className="flex items-center justify-between mb-2" style={{ width: '100%', maxWidth: 'calc(100% - 2rem)' }}>
-        <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap">
+    <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-3/4 bg-gray-400 rounded-3xl p-6 shadow-lg flex flex-col items-stretch">
+      <div className="flex items-center justify-between mb-2 -mx-2">
+        <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap pl-4">
           <AnimatePresence>
             {compareProducts.map((tv, i) => (
               <motion.div
@@ -51,16 +51,15 @@ export default function ChatBar({ input, setInput, handleSend, compareProducts, 
             ))}
           </AnimatePresence>
         </div>
-        {compareProducts.length > 0 && (
+        {compareProducts.length >= 2 && (
           <div
-            className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-              compareProducts.length >= 2 ? 'bg-blue-600 text-white cursor-pointer' : 'bg-gray-400 text-white opacity-70 cursor-not-allowed'
-            }`}
-            onClick={() => compareProducts.length >= 2 && setSheetProduct({ comparison: true, tvs: compareProducts })}
+            className="flex items-center px-5 py-2 rounded-full text-lg font-medium bg-blue-600 text-white cursor-pointer"
+            style={{ marginRight: '5.5rem', marginBottom: '0.5rem'}}
+            onClick={() => setSheetProduct({ comparison: true, tvs: compareProducts })}
           >
             <span>Compare Now</span>
             <button
-              className="ml-2 text-white hover:text-gray-200 focus:outline-none"
+              className="ml-3 text-white hover:text-gray-200 focus:outline-none text-lg"
               onClick={(e) => {
                 e.stopPropagation();
                 handleClearComparisons();
@@ -71,21 +70,22 @@ export default function ChatBar({ input, setInput, handleSend, compareProducts, 
           </div>
         )}
       </div>
+      
       <div className="flex items-center justify-between">
         <input
           ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-          className="flex-1 bg-gray-700 text-white px-4 py-3 rounded-2xl text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+          className="flex-1 bg-white text-black px-4 py-3 rounded-2xl text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
           placeholder={isCompareMode ? 'Max 3 TVs can be selected for comparison' : 'Ask about TVs (e.g., "add Samsung QLED TV to comparison")...'}
           disabled={compareProducts.length >= 3}
         />
         <div className="flex items-center ml-4 space-x-2">
-          <button onClick={handleSend} className="text-blue-400 hover:text-blue-300">
+          <button onClick={handleSend} className="text-white hover:text-blue-300">
             <FiSend className="w-6 h-6" />
           </button>
-          <button className="text-blue-400 hover:text-blue-300">
+          <button className="text-white hover:text-blue-300">
             <MdMic className="w-6 h-6" />
           </button>
         </div>
