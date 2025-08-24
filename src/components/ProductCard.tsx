@@ -48,22 +48,22 @@ export default function ProductCard({
         transition={{ duration: 0.6, ease: "easeInOut" }}
         style={{ transformStyle: "preserve-3d" }}
       >
-        {/* Front Side - Made transparent to blend with background */}
+        {/* Front Side */}
         <motion.div
-          className="absolute inset-0 text-white p-8 rounded-3xl flex flex-col items-center text-center relative group border border-white/20"
+          className="absolute inset-0 bg-white text-black p-8 rounded-3xl flex flex-col items-center text-center relative group border border-gray-300"
           style={{
-            background: 'linear-gradient(145deg, rgba(255,255,255,0.1), rgba(248,249,250,0.15))',
-            backdropFilter: 'blur(15px)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+            background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
             backfaceVisibility: 'hidden',
           }}
           whileHover={!isFlipped ? {
             scale: 1.02,
-            background: 'linear-gradient(145deg, rgba(255,255,255,0.2), rgba(248,249,250,0.25))',
+            background: 'linear-gradient(145deg, #f8f9fa, #e9ecef)',
           } : {}}
           transition={{ duration: 0.2 }}
         >
-          <div className="w-full h-72 flex items-center justify-center mb-6 overflow-hidden relative mt-8">
+          <div className="w-full h-96 flex items-center justify-center mb-6 overflow-hidden relative mt-8">
             <img
               src={image}
               alt={name}
@@ -73,7 +73,7 @@ export default function ProductCard({
           </div>
           
           <span
-            className={`absolute top-4 right-4 text-white text-base font-medium z-10 cursor-pointer ${compareClass}`}
+            className={`absolute top-4 right-4 text-blue-600 text-base font-medium z-10 cursor-pointer ${compareClass}`}
             style={style}
             onClick={() => {
               if (isCompared) {
@@ -86,14 +86,14 @@ export default function ProductCard({
             {isCompared ? '✓ Compare' : 'Compare'}
           </span>
 
-          <h2 className="text-2xl font-bold mb-4 line-clamp-2 leading-tight text-white">{name}</h2>
-          <p className="text-base mb-6 text-white/90 flex-grow leading-relaxed">
+          <h2 className="text-3xl font-extrabold mb-6 line-clamp-2 leading-tight text-black">{name}</h2>
+          <p className="text-lg mb-8 text-black flex-grow leading-relaxed">
             {Object.entries(specs).map(([k, v]) => `${k}: ${v}`).join(' • ')}
           </p>
 
           <div className="flex justify-center items-center gap-6 mt-auto w-full">
             <span
-              className="text-white hover:text-white/80 cursor-pointer font-semibold text-lg transition-colors duration-200"
+              className="text-blue-600 hover:text-blue-700 cursor-pointer font-semibold text-lg transition-colors duration-200"
               onClick={handleLearnMore}
             >
               Learn More
@@ -111,7 +111,7 @@ export default function ProductCard({
           </div>
         </motion.div>
 
-        {/* Back Side - Kept original styling */}
+        {/* Back Side */}
         <motion.div
           className="absolute inset-0 bg-gray-200 text-black p-6 rounded-3xl flex flex-col items-center text-center border-2 border-gray-400 overflow-y-auto"
           style={{
@@ -131,9 +131,9 @@ export default function ProductCard({
             </button>
           </div>
           
-          <h2 className="text-2xl font-black text-gray-900 mb-3">{name}</h2>
+          <h2 className="text-3xl font-extrabold text-gray-900 mb-4">{name}</h2>
           
-          <div className="w-full h-28 flex items-center justify-center mb-3 rounded-xl">
+          <div className="w-full h-48 flex items-center justify-center mb-4 rounded-xl">
             <img
               src={image}
               alt={name}
@@ -143,15 +143,15 @@ export default function ProductCard({
           </div>
 
           <div className="flex-grow text-center space-y-3 w-full">
-            <h3 className="text-lg font-black text-gray-900 mb-2">Product Details</h3>
-            <p className="text-base text-gray-800 leading-relaxed mb-3 font-medium">
+            <h3 className="text-xl font-extrabold text-gray-900 mb-3">Product Details</h3>
+            <p className="text-lg text-gray-800 leading-relaxed mb-4 font-medium">
               {learn_more}
             </p>
             
             <div className="space-y-2">
-              <h4 className="text-lg font-black text-gray-800 mb-2">Specifications</h4>
+              <h4 className="text-xl font-extrabold text-gray-800 mb-3">Specifications</h4>
               {Object.entries(specs).map(([key, value]) => (
-                <div key={key} className="text-sm">
+                <div key={key} className="text-lg">
                   <span className="font-bold text-gray-700">{key}: </span>
                   <span className="text-gray-800 font-medium">{value}</span>
                 </div>
@@ -160,7 +160,7 @@ export default function ProductCard({
           </div>
 
           <button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg py-3 px-6 rounded-xl mt-3 transition-colors duration-200"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg py-3 px-6 rounded-xl mt-4 transition-colors duration-200"
             onClick={(e) => {
               e.stopPropagation();
               console.log('Buy Now clicked for:', name);
