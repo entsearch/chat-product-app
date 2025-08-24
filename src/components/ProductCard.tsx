@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import { FaArrowLeft } from 'react-icons/fa';
+
 
 interface ProductCardProps {
   id: string;
@@ -38,6 +40,11 @@ export default function ProductCard({
     e.stopPropagation();
     setIsFlipped(!isFlipped);
     // Don't call onLearnMore to prevent sheet from opening
+  };
+
+  const handleFlipBack = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsFlipped(false);
   };
 
   return (
@@ -121,14 +128,8 @@ export default function ProductCard({
             backfaceVisibility: 'hidden',
           }}
         >
-          <div className="flex justify-end items-start w-full mb-2">
-            <button
-              className="text-black hover:text-gray-900 font-black text-4xl px-3 py-2 rounded-lg hover:bg-gray-300 transition-all duration-200 leading-none"
-              onClick={handleLearnMore}
-              style={{ lineHeight: '1' }}
-            >
-              ←
-            </button>
+          <div className="flex justify-end items-start w-full mb-4">
+            {/* Removed top arrow button */}
           </div>
           
           <h2 className="text-3xl font-extrabold text-gray-900 mb-4">{name}</h2>
@@ -159,15 +160,24 @@ export default function ProductCard({
             </div>
           </div>
 
-          <button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg py-3 px-6 rounded-xl mt-4 transition-colors duration-200"
-            onClick={(e) => {
-              e.stopPropagation();
-              console.log('Buy Now clicked for:', name);
-            }}
-          >
-            BUY NOW
-          </button>
+          <div className="flex justify-center items-center gap-6 mt-4 w-full">
+            <span
+              className="text-blue-600 hover:text-blue-700 cursor-pointer font-extrabold text-lg drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)] transition-colors duration-200"
+              onClick={handleFlipBack}
+            >
+              <FaArrowLeft className="w-6 h-6" />
+            </span>
+            
+            <button
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg py-3 px-6 rounded-xl mt-4 transition-colors duration-200"
+              onClick={(e) => {
+                e.stopPropagation();
+                console.log('Buy Now clicked for:', name);
+              }}
+            >
+              BUY NOW
+            </button>
+          </div>
         </motion.div>
       </motion.div>
     </div>
