@@ -24,7 +24,7 @@ export default function ChatBar({ input, setInput, handleSend, compareProducts, 
   
   return (
     <div 
-      className="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-3/4 rounded-3xl p-6 flex flex-col items-stretch"
+      className="fixed z-50 bottom-8 left-1/2 transform -translate-x-1/2 w-3/4 rounded-3xl p-6 flex flex-col items-stretch"
       style={{
         background: 'rgba(30, 30, 30, 0.3)', // Darker grey for glass effect
         backdropFilter: 'blur(12px)', // Retained blur for frosted glass

@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import ProductCard from './ProductCard';
-import { FaUser} from 'react-icons/fa';
+import { FaUser } from 'react-icons/fa';
 import { HiSparkles } from "react-icons/hi";
 
 interface ChatResponseProps {
@@ -32,14 +32,18 @@ export default function ChatResponse({ message, userQuery, index, onLearnMore, o
     'https://images.samsung.com/is/image/samsung/p6pim/us/feature/165878555/us-feature-enjoy-a-full-range-of-authentic-colors-546018674?$ORIGIN_IMG$'
   ];
 
-  // Randomly select a background image
-  const selectedBackground = backgroundImages[Math.floor(Math.random() * backgroundImages.length)];
+  // State to manage selected background image
+  const [selectedBackground, setSelectedBackground] = useState(() => backgroundImages[Math.floor(Math.random() * backgroundImages.length)]);
 
   useEffect(() => {
     if (responseRef.current) {
       responseRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }, []);
+    // Update background image only when userQuery changes (new query submitted)
+    if (userQuery) {
+      setSelectedBackground(backgroundImages[Math.floor(Math.random() * backgroundImages.length)]);
+    }
+  }, [userQuery]);
 
   return (
     <div ref={responseRef} className="w-full max-w-[95%] mx-auto mb-8 relative z-10">
@@ -61,10 +65,9 @@ export default function ChatResponse({ message, userQuery, index, onLearnMore, o
       <div className="relative">
         {/* AI Response Bubble */}
         <motion.div
-          className="bg-black text-white p-6 rounded-3xl rounded-br-3xl flex flex-col shadow-lg max-w-[65%] relative z-20 mb-4"
+          className="bg-black text-white p-6 rounded-3xl rounded-br-none flex flex-col shadow-lg max-w-[65%] relative z-20 mb-4"
           style={{
             background: 'linear-gradient(135deg, #000000, #1a1a1a)',
-            borderBottomRightRadius: '12px',
           }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -84,22 +87,23 @@ export default function ChatResponse({ message, userQuery, index, onLearnMore, o
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             {/* Samsung TV Background Image Section - Visible at top */}
-            <div className="relative h-64 overflow-hidden">
+            <div className="relative w-full h-[400px] overflow-hidden">
               <div 
-                className="absolute inset-0 bg-cover bg-center"
+                className="absolute inset-0 bg-contain bg-center bg-gray-800"
                 style={{
                   backgroundImage: `url('${selectedBackground}')`,
                   backgroundPosition: 'center',
-                  backgroundSize: 'cover',
+                  backgroundRepeat: 'no-repeat',
+                  aspectRatio: '16 / 9',
                 }}
               />
               {/* Subtle dark overlay for text readability */}
-              <div className="absolute inset-0 bg-black/30" />
+              <div className="absolute inset-0 bg-black/60" />
               
-              {/* Hero Text Over Image */}
+              {/* Hero Text with Adaptive Overlay */}
               <div className="absolute inset-0 flex flex-col justify-center px-8">
                 <motion.h2 
-                  className="text-4xl font-bold text-white mb-4 drop-shadow-lg"
+                  className="text-4xl font-bold text-white mb-4 drop-shadow-[0_4px_6px_rgba(0,0,0,0.5)]"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
@@ -107,7 +111,7 @@ export default function ChatResponse({ message, userQuery, index, onLearnMore, o
                   Transform Your Home with Samsung
                 </motion.h2>
                 <motion.p 
-                  className="text-xl text-gray-200 max-w-3xl leading-relaxed drop-shadow-md"
+                  className="text-xl text-gray-200 max-w-3xl leading-relaxed drop-shadow-[0_4px_6px_rgba(0,0,0,0.5)]"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.5 }}
@@ -134,7 +138,7 @@ export default function ChatResponse({ message, userQuery, index, onLearnMore, o
                   Smart Hub
                 </span>
                 <span className="bg-gray-800/80 border border-gray-600/30 text-white px-6 py-2 rounded-full font-medium">
-                  8K AI Upscaling
+                  8K Upscaling
                 </span>
               </motion.div>
 

@@ -48,18 +48,18 @@ export default function ProductCard({
         transition={{ duration: 0.6, ease: "easeInOut" }}
         style={{ transformStyle: "preserve-3d" }}
       >
-        {/* Front Side */}
+        {/* Front Side - Made transparent to blend with background */}
         <motion.div
-          className="absolute inset-0 bg-white text-black p-8 rounded-3xl flex flex-col items-center text-center relative group border border-gray-300"
+          className="absolute inset-0 text-white p-8 rounded-3xl flex flex-col items-center text-center relative group border border-white/20"
           style={{
-            background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
-            backdropFilter: 'blur(10px)',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+            background: 'linear-gradient(145deg, rgba(255,255,255,0.1), rgba(248,249,250,0.15))',
+            backdropFilter: 'blur(15px)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
             backfaceVisibility: 'hidden',
           }}
           whileHover={!isFlipped ? {
             scale: 1.02,
-            background: 'linear-gradient(145deg, #f8f9fa, #e9ecef)',
+            background: 'linear-gradient(145deg, rgba(255,255,255,0.2), rgba(248,249,250,0.25))',
           } : {}}
           transition={{ duration: 0.2 }}
         >
@@ -73,7 +73,7 @@ export default function ProductCard({
           </div>
           
           <span
-            className={`absolute top-4 right-4 text-blue-600 text-base font-medium z-10 cursor-pointer ${compareClass}`}
+            className={`absolute top-4 right-4 text-white text-base font-medium z-10 cursor-pointer ${compareClass}`}
             style={style}
             onClick={() => {
               if (isCompared) {
@@ -86,14 +86,14 @@ export default function ProductCard({
             {isCompared ? '✓ Compare' : 'Compare'}
           </span>
 
-          <h2 className="text-2xl font-bold mb-4 line-clamp-2 leading-tight text-black">{name}</h2>
-          <p className="text-base mb-6 text-black flex-grow leading-relaxed">
+          <h2 className="text-2xl font-bold mb-4 line-clamp-2 leading-tight text-white">{name}</h2>
+          <p className="text-base mb-6 text-white/90 flex-grow leading-relaxed">
             {Object.entries(specs).map(([k, v]) => `${k}: ${v}`).join(' • ')}
           </p>
 
           <div className="flex justify-center items-center gap-6 mt-auto w-full">
             <span
-              className="text-blue-600 hover:text-blue-700 cursor-pointer font-semibold text-lg transition-colors duration-200"
+              className="text-white hover:text-white/80 cursor-pointer font-semibold text-lg transition-colors duration-200"
               onClick={handleLearnMore}
             >
               Learn More
@@ -111,7 +111,7 @@ export default function ProductCard({
           </div>
         </motion.div>
 
-        {/* Back Side */}
+        {/* Back Side - Kept original styling */}
         <motion.div
           className="absolute inset-0 bg-gray-200 text-black p-6 rounded-3xl flex flex-col items-center text-center border-2 border-gray-400 overflow-y-auto"
           style={{
