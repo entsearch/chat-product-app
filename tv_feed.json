@@ -1,0 +1,235 @@
+[
+    {
+      "modelCode": "QN90D",
+      "shortDescription": "Samsung Neo QLED 4K TV with Mini-LED technology and powerful AI upscaling.",
+      "longDescription": "The Samsung Neo QLED QN90D is a premium 4K TV featuring Mini-LED backlighting, Quantum HDR, Neural Quantum Processor, and top-tier gaming features including HDMI 2.1 and FreeSync Premium Pro. Designed for both cinematic and gaming experiences with ultra-slim bezels and immersive sound.",
+      "variants": [
+        { "sizeInInches": 43, "price": { "actualPriceUSD": 1199, "suggestedPriceUSD": 1499 } },
+        { "sizeInInches": 50, "price": { "actualPriceUSD": 1399, "suggestedPriceUSD": 1699 } },
+        { "sizeInInches": 55, "price": { "actualPriceUSD": 1599, "suggestedPriceUSD": 1899 } },
+        { "sizeInInches": 65, "price": { "actualPriceUSD": 2199, "suggestedPriceUSD": 2499 } },
+        { "sizeInInches": 75, "price": { "actualPriceUSD": 2999, "suggestedPriceUSD": 3499 } },
+        { "sizeInInches": 85, "price": { "actualPriceUSD": 3999, "suggestedPriceUSD": 4499 } }
+      ],
+      "display": {
+        "technology": "Neo QLED (Mini-LED)",
+        "resolution": "4K UHD",
+        "refreshRateHz": 120,
+        "hdrSupport": ["HDR10", "HDR10+", "HLG"],
+        "contrastTech": "Quantum Matrix Technology"
+      },
+      "processor": {
+        "name": "Neural Quantum Processor 4K",
+        "aiUpscaling": true
+      },
+      "gamingFeatures": {
+        "hdmiVersion": "2.1",
+        "vrr": true,
+        "freesync": true,
+        "gameBar": true,
+        "lowInputLag": true
+      },
+      "audio": {
+        "dolbyAtmos": true,
+        "objectTrackingSound": true,
+        "qSymphony": true,
+        "speakerOutputW": 60
+      },
+      "connectivity": {
+        "hdmiPorts": 4,
+        "usbPorts": 2,
+        "wifiVersion": "Wi-Fi 6E",
+        "bluetooth": "5.2"
+      },
+      "design": {
+        "bezels": "Ultra-slim",
+        "mountOptions": ["Slim Fit Wall Mount", "VESA mount"],
+        "standType": "Center stand"
+      },
+      "images": {
+        "mainImage": {
+          "url": "https://www.samsung.com/us/tvs/neo-qled/75-class-neo-qled-8k-tv-qn990f-sku-qn75qn990ffxza/#",
+          "description": "Front view of Samsung Neo QLED QN90D TV"
+        },
+        "supportingImages": [
+          { "url": "https://images.samsung.com/is/image/samsung/p6pim/us/qn75qn990ffxza/gallery/us-qled-qn990f-qn75qn990ffxza-547902883?$product-details-jpg$", "description": "Stunning clarity" },
+          { "url": "https://images.samsung.com/is/image/samsung/p6pim/us/qn75qn990ffxza/gallery/us-qled-qn990f-qn75qn990ffxza-545985243?$product-details-jpg$", "description": "Wireless one connect" },
+          { "url": "https://images.samsung.com/is/image/samsung/p6pim/us/qn75qn990ffxza/gallery/us-qled-qn990f-qn75qn990ffxza-545985247?$product-details-jpg$", "description": "Living room setup with Neo QLED TV" }
+        ]
+      }
+    },
+    {
+      "modelCode": "S95D",
+      "shortDescription": "Samsung OLED 4K TV with Quantum Dot color and ultra-low reflection.",
+      "longDescription": "The Samsung OLED S95D blends OLED contrast with Quantum Dot brightness, delivering vivid colors and deep blacks. It supports advanced gaming features, Dolby Atmos, and anti-reflection technology, making it ideal for both entertainment and gaming.",
+      "variants": [
+        { "sizeInInches": 55, "price": { "actualPriceUSD": 1999, "suggestedPriceUSD": 2299 } },
+        { "sizeInInches": 65, "price": { "actualPriceUSD": 2599, "suggestedPriceUSD": 2899 } },
+        { "sizeInInches": 77, "price": { "actualPriceUSD": 3699, "suggestedPriceUSD": 3999 } }
+      ],
+      "display": {
+        "technology": "OLED with Quantum Dot",
+        "resolution": "4K UHD",
+        "refreshRateHz": 144,
+        "hdrSupport": ["HDR10", "HDR10+", "HLG"],
+        "contrastTech": "OLED Self-emissive pixels"
+      },
+      "processor": {
+        "name": "Neural Quantum Processor 4K",
+        "aiUpscaling": true
+      },
+      "gamingFeatures": {
+        "hdmiVersion": "2.1",
+        "vrr": true,
+        "freesync": true,
+        "gameBar": true,
+        "lowInputLag": true
+      },
+      "audio": {
+        "dolbyAtmos": true,
+        "objectTrackingSound": true,
+        "qSymphony": true,
+        "speakerOutputW": 40
+      },
+      "connectivity": {
+        "hdmiPorts": 4,
+        "usbPorts": 2,
+        "wifiVersion": "Wi-Fi 6E",
+        "bluetooth": "5.2"
+      },
+      "design": {
+        "bezels": "Ultra-slim Infinity One",
+        "mountOptions": ["Slim Fit Wall Mount"],
+        "standType": "Center stand"
+      },
+      "images": {
+        "mainImage": {
+          "url": "https://images.samsung.com/is/image/samsung/p6pim/us/qn77s90fafxza/gallery/us-oled-tv-qn77s90fafxza-front-black-545665879?$product-details-jpg$",
+          "description": "Samsung OLED S95D front view"
+        },
+        "supportingImages": [
+          { "url": "https://images.samsung.com/is/image/samsung/p6pim/us/qn77s90fafxza/gallery/us-oled-tv-qn77s90fafxza-l-perspective-black-545665881?$product-details-jpg$", "description": "Ultra-thin side profile of OLED S95D" },
+          { "url": "https://images.samsung.com/is/image/samsung/p6pim/us/qn77s90fafxza/gallery/us-oled-tv-qn77s90fafxza-qn--s--faexza-upscaling-545665877?$product-details-jpg$", "description": "AI upscaling Pro" },
+          { "url": "https://images.samsung.com/is/image/samsung/p6pim/us/qn77s84faexza/gallery/us-oled-s85f-559630-qn77s84faexza-548266843?$product-details-jpg$", "description": "Self-illuminating pixels provide optimized brightness and infinite contrast" }
+        ]
+      }
+    },
+    {
+      "modelCode": "Q80D",
+      "shortDescription": "Samsung QLED 4K TV with Quantum HDR and strong gaming performance.",
+      "longDescription": "The Samsung Q80D QLED 4K TV provides excellent brightness, Quantum HDR support, and advanced gaming performance with HDMI 2.1. It’s a versatile choice for movies, sports, and gaming.",
+      "variants": [
+        { "sizeInInches": 50, "price": { "actualPriceUSD": 999, "suggestedPriceUSD": 1199 } },
+        { "sizeInInches": 55, "price": { "actualPriceUSD": 1099, "suggestedPriceUSD": 1299 } },
+        { "sizeInInches": 65, "price": { "actualPriceUSD": 1499, "suggestedPriceUSD": 1799 } },
+        { "sizeInInches": 75, "price": { "actualPriceUSD": 1999, "suggestedPriceUSD": 2299 } },
+        { "sizeInInches": 85, "price": { "actualPriceUSD": 2799, "suggestedPriceUSD": 3099 } }
+      ],
+      "display": {
+        "technology": "QLED",
+        "resolution": "4K UHD",
+        "refreshRateHz": 120,
+        "hdrSupport": ["HDR10", "HDR10+", "HLG"],
+        "contrastTech": "Direct Full Array"
+      },
+      "processor": {
+        "name": "Neural Quantum Processor 4K",
+        "aiUpscaling": true
+      },
+      "gamingFeatures": {
+        "hdmiVersion": "2.1",
+        "vrr": true,
+        "freesync": true,
+        "gameBar": true,
+        "lowInputLag": true
+      },
+      "audio": {
+        "dolbyAtmos": true,
+        "objectTrackingSound": false,
+        "qSymphony": true,
+        "speakerOutputW": 40
+      },
+      "connectivity": {
+        "hdmiPorts": 4,
+        "usbPorts": 2,
+        "wifiVersion": "Wi-Fi 6",
+        "bluetooth": "5.2"
+      },
+      "design": {
+        "bezels": "Slim",
+        "mountOptions": ["Standard VESA mount"],
+        "standType": "Wide stand"
+      },
+      "images": {
+        "mainImage": {
+          "url": "https://images.samsung.com/is/image/samsung/p6pim/us/qn75qef1afxza/gallery/us-qled-qef1-548500-qn75qef1afxza-547033885?$product-details-jpg$",
+          "description": "Samsung QLED Q80D TV front view"
+        },
+        "supportingImages": [
+          { "url": "https://images.samsung.com/is/image/samsung/p6pim/us/qn75qef1afxza/gallery/us-qled-qef1-qn75qef1afxza-547066725?$product-details-jpg$", "description": "Lifestyle photo with Q80D in a bright room" },
+          { "url": "https://images.samsung.com/is/image/samsung/p6pim/us/qn75qef1afxza/gallery/us-qled-qef1-qn75qef1afxza-547066687?$product-details-jpg$", "description": "over a billion colors that don't fade" },
+          { "url": "https://image-us.samsung.com/SamsungUS/home/television-home-theater/tvs/qled-4k-tvs/04262024/fb/ObjectTrackingSound1600x1200.jpg?$product-details-jpg$", "description": "3d sorround sound" }
+        ]
+      }
+    },
+    {
+      "modelCode": "CU8000",
+      "shortDescription": "Samsung Crystal UHD 4K TV with Dynamic Crystal Color.",
+      "longDescription": "The Samsung Crystal UHD CU8000 is an affordable 4K TV with PurColor, HDR support, and slim design. It is a great choice for everyday entertainment and casual viewing.",
+      "variants": [
+        { "sizeInInches": 43, "price": { "actualPriceUSD": 379, "suggestedPriceUSD": 499 } },
+        { "sizeInInches": 50, "price": { "actualPriceUSD": 429, "suggestedPriceUSD": 599 } },
+        { "sizeInInches": 55, "price": { "actualPriceUSD": 499, "suggestedPriceUSD": 699 } },
+        { "sizeInInches": 65, "price": { "actualPriceUSD": 649, "suggestedPriceUSD": 899 } },
+        { "sizeInInches": 75, "price": { "actualPriceUSD": 999, "suggestedPriceUSD": 1199 } },
+        { "sizeInInches": 85, "price": { "actualPriceUSD": 1299, "suggestedPriceUSD": 1499 } }
+      ],
+      "display": {
+        "technology": "Crystal UHD (LED)",
+        "resolution": "4K UHD",
+        "refreshRateHz": 60,
+        "hdrSupport": ["HDR10", "HLG"],
+        "contrastTech": "UHD Dimming"
+      },
+      "processor": {
+        "name": "Crystal Processor 4K",
+        "aiUpscaling": true
+      },
+      "gamingFeatures": {
+        "hdmiVersion": "2.0",
+        "vrr": false,
+        "freesync": false,
+        "gameBar": true,
+        "lowInputLag": true
+      },
+      "audio": {
+        "dolbyAtmos": false,
+        "objectTrackingSound": false,
+        "qSymphony": true,
+        "speakerOutputW": 20
+      },
+      "connectivity": {
+        "hdmiPorts": 3,
+        "usbPorts": 2,
+        "wifiVersion": "Wi-Fi 5",
+        "bluetooth": "5.2"
+      },
+      "design": {
+        "bezels": "Slim",
+        "mountOptions": ["Standard VESA mount"],
+        "standType": "Side legs"
+      },
+      "images": {
+        "mainImage": {
+          "url": "https://images.samsung.com/is/image/samsung/p6pim/us/un85u8000ffxza/gallery/us-uhd-u8000f-un85u8000ffxza-545908170?$product-details-jpg$",
+          "description": "Samsung Crystal UHD CU8000 TV front view"
+        },
+        "supportingImages": [
+          { "url": "https://image-us.samsung.com/SamsungUS/home/television-home-theater/tvs/crystal-uhd-tvs/cu8000/gi/CU7000_Gallery_Images_BBIs.png?$product-details-jpg$", "description": "Enhanced sense of color and depth" },
+          { "url": "https://image-us.samsung.com/SamsungUS/home/television-home-theater/tvs/crystal-uhd-tvs/cu8000/gi/CU8000_BBI_4.jpg?$product-details-jpg$", "description": "Rich dark and bright whites" },
+          { "url": "https://image-us.samsung.com/SamsungUS/home/television-home-theater/tvs/crystal-uhd-tvs/cu8000/gi/CU8000_BBI_3.jpg?$product-details-jpg$", "description": "Smooth motion on-screen" }
+        ]
+      }
+    }
+  ]
+  
