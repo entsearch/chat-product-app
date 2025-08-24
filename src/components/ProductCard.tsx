@@ -69,7 +69,7 @@ export default function ProductCard({
           }
         }}
       >
-        {isCompared ? '✓ Compared' : 'Compare'}
+        {isCompared ? '✓ Compare' : 'Compare'}
       </span>
       
       <h2 className="text-2xl font-extrabold mb-4 line-clamp-2 leading-tight text-gray-900">{name}</h2>

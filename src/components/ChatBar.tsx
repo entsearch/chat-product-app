@@ -23,7 +23,15 @@ export default function ChatBar({ input, setInput, handleSend, compareProducts, 
   const isCompareMode = compareProducts.length >= 1;
   
   return (
-    <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-3/4 bg-gray-400 rounded-3xl p-6 shadow-lg flex flex-col items-stretch">
+    <div 
+      className="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-3/4 rounded-3xl p-6 flex flex-col items-stretch"
+      style={{
+        background: 'rgba(30, 30, 30, 0.3)', // Darker grey for glass effect
+        backdropFilter: 'blur(12px)', // Retained blur for frosted glass
+        boxShadow: '0 4px 30px rgba(0, 0, 0, 0.2), 0 2px 10px rgba(0, 0, 255, 0.1)', // Soft shadow
+        border: '1px solid rgba(255, 255, 255, 0.3)', // Light border
+      }}
+    >
       <div className="flex items-center justify-between mb-2 -mx-2">
         <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap pl-4">
           <AnimatePresence>
@@ -77,8 +85,9 @@ export default function ChatBar({ input, setInput, handleSend, compareProducts, 
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-          className="flex-1 bg-white text-black px-4 py-3 rounded-2xl text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
-          placeholder={isCompareMode ? 'Max 3 TVs can be selected for comparison' : 'Ask about TVs (e.g., "add Samsung QLED TV to comparison")...'}
+          className="flex-1 bg-white/95 text-black px-4 py-3 rounded-2xl text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+          style={{ backdropFilter: 'blur(8px)' }} // Subtle blur for input
+          placeholder={isCompareMode ? 'Max 3 TVs can be selected for comparison' : 'Discover Your Perfect TV ...'}
           disabled={compareProducts.length >= 3}
         />
         <div className="flex items-center ml-4 space-x-2">

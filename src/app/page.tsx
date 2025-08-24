@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ChatResponse from '../components/ChatResponse';
 import ChatBar from '../components/ChatBar';
@@ -60,39 +60,70 @@ export default function Home() {
     }
   };
 
+  // Typing effect state for title only
+  const [titleText, setTitleText] = useState('');
+  const fullTitle = 'Samsung TV Storefront';
+
+  useEffect(() => {
+    // Typing effect for title
+    let titleIndex = 0;
+    const titleInterval = setInterval(() => {
+      if (titleIndex < fullTitle.length) {
+        setTitleText(fullTitle.slice(0, titleIndex + 1));
+        titleIndex++;
+      } else {
+        clearInterval(titleInterval);
+      }
+    }, 80); // Typing speed for title
+
+    return () => {
+      clearInterval(titleInterval);
+    };
+  }, []);
+
   return (
     <div className="flex flex-col h-screen bg-white text-black">
       <div className="text-center mt-12">
-        <h1 className="text-5xl font-bold text-blue-600">Discover Your Perfect TV</h1>
-        <p className="text-lg text-gray-600 mt-2">Ask anything about TVs—I'm here to help!</p>
+        <motion.h1
+          className="text-5xl font-bold text-blue-600"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          {titleText}
+        </motion.h1>
+        <motion.p
+          className="text-lg text-gray-600 mt-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3, delay: fullTitle.length * 0.08 + 0.2 }}
+        >
+          GenAI can make mistakes
+        </motion.p>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-8 space-y-8 pb-40">
+      <div className="flex-1 overflow-y-auto p-8 space-y-8 pb-40 scroll-container">
         <AnimatePresence>
-          {messages.map((msg, index) => (
-            msg.role === 'user' ? (
-              <motion.div
-                key={index}
-                className="flex justify-end pr-8"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="bg-blue-600 text-white p-6 rounded-3xl w-[50%] shadow-lg">
-                  <p className="text-lg leading-relaxed">{msg.content}</p>
-                </div>
-              </motion.div>
-            ) : (
-              <ChatResponse
-                key={index}
-                message={msg as any}
-                index={index}
-                onLearnMore={handleLearnMore}
-                onCompare={handleCompareToggle}
-                compareProducts={compareProducts}
-                sheetOpen={!!sheetProduct}
-              />
-            )
+          {messages.reduce((acc: any[], msg, index) => {
+            if (msg.role === 'user') {
+              const nextMsg = messages[index + 1];
+              if (nextMsg && nextMsg.role === 'assistant') {
+                acc.push({ userQuery: msg.content, assistant: nextMsg });
+              }
+              return acc;
+            }
+            return acc;
+          }, []).map((pair: any, pairIndex: number) => (
+            <ChatResponse
+              key={pairIndex}
+              message={pair.assistant}
+              userQuery={pair.userQuery}
+              index={pairIndex}
+              onLearnMore={handleLearnMore}
+              onCompare={handleCompareToggle}
+              compareProducts={compareProducts}
+              sheetOpen={!!sheetProduct}
+            />
           ))}
         </AnimatePresence>
       </div>
