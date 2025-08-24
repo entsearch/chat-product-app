@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { FaArrowLeft } from 'react-icons/fa';
-
+import { FaArrowLeft } from '@react-icons/all-files/fa/FaArrowLeft';
 
 interface ProductCardProps {
   id: string;
@@ -27,6 +26,12 @@ export default function ProductCard({
   maxComparisonsReached
 }: ProductCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [currentPrice, setCurrentPrice] = useState(() => {
+    return Math.floor(Math.random() * (4500 - 999 + 1)) + 999;
+  });
+  const priceIncrease = Math.random() * 0.3 + 0.2; // 20-50% increase
+  const beforePrice = Math.round(currentPrice * (1 + priceIncrease));
+  const savings = beforePrice - currentPrice;
 
   const compareClass = isCompared
     ? 'text-green-600 opacity-100 cursor-pointer'
@@ -98,23 +103,34 @@ export default function ProductCard({
             {Object.entries(specs).map(([k, v]) => `${k}: ${v}`).join(' • ')}
           </p>
 
-          <div className="flex justify-center items-center gap-6 mt-auto w-full">
-            <span
-              className="text-blue-600 hover:text-blue-700 cursor-pointer font-semibold text-lg transition-colors duration-200"
-              onClick={handleLearnMore}
-            >
-              Learn More
-            </span>
-            
-            <button
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg py-3 px-6 rounded-xl transition-colors duration-200"
-              onClick={(e) => {
-                e.stopPropagation();
-                console.log('Buy Now clicked for:', name);
-              }}
-            >
-              BUY NOW
-            </button>
+          <div className="flex flex-col items-center w-full">
+            <div className="mb-4 text-center">
+              <span className="text-black font-bold text-xl">${currentPrice.toFixed(2)}</span>
+              {beforePrice > currentPrice && (
+                <>
+                  <span className="text-gray-500 text-sm line-through ml-2">${beforePrice.toFixed(2)}</span>
+                  <span className="text-orange-500 font-semibold text-base ml-2">SAVE ${savings.toFixed(2)}</span>
+                </>
+              )}
+            </div>
+            <div className="flex justify-center items-center gap-6 w-full">
+              <span
+                className="text-blue-600 hover:text-blue-700 cursor-pointer font-semibold text-lg transition-colors duration-200"
+                onClick={handleLearnMore}
+              >
+                Learn More
+              </span>
+              
+              <button
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg py-3 px-6 rounded-xl transition-colors duration-200"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  console.log('Buy Now clicked for:', name);
+                }}
+              >
+                BUY NOW
+              </button>
+            </div>
           </div>
         </motion.div>
 
@@ -160,23 +176,34 @@ export default function ProductCard({
             </div>
           </div>
 
-          <div className="flex justify-center items-center gap-6 mt-4 w-full">
-            <span
-              className="text-blue-600 hover:text-blue-700 cursor-pointer font-extrabold text-lg drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)] transition-colors duration-200"
-              onClick={handleFlipBack}
-            >
-              <FaArrowLeft className="w-6 h-6" />
-            </span>
-            
-            <button
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg py-3 px-6 rounded-xl mt-4 transition-colors duration-200"
-              onClick={(e) => {
-                e.stopPropagation();
-                console.log('Buy Now clicked for:', name);
-              }}
-            >
-              BUY NOW
-            </button>
+          <div className="flex flex-col items-center w-full">
+            <div className="mb-4 text-center">
+              <span className="text-black font-bold text-xl">${currentPrice.toFixed(2)}</span>
+              {beforePrice > currentPrice && (
+                <>
+                  <span className="text-gray-500 text-sm line-through ml-2">${beforePrice.toFixed(2)}</span>
+                  <span className="text-orange-500 font-semibold text-base ml-2">SAVE ${savings.toFixed(2)}</span>
+                </>
+              )}
+            </div>
+            <div className="flex justify-center items-center gap-6 w-full">
+              <span
+                className="text-blue-600 hover:text-blue-700 cursor-pointer font-extrabold text-lg drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)] transition-colors duration-200"
+                onClick={handleFlipBack}
+              >
+                <FaArrowLeft className="w-6 h-6" />
+              </span>
+              
+              <button
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg py-3 px-6 rounded-xl transition-colors duration-200"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  console.log('Buy Now clicked for:', name);
+                }}
+              >
+                BUY NOW
+              </button>
+            </div>
           </div>
         </motion.div>
       </motion.div>
