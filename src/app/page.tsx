@@ -109,6 +109,21 @@ export default function Home() {
     });
   };
 
+  // NEW: Handle feature clicks - opens detail sheet with feature info
+  const handleFeatureClick = (feature: string) => {
+    console.log('Feature clicked:', feature);
+    
+    // Create a special sheet product for features
+    const featureSheetProduct = {
+      isFeature: true,
+      feature: feature,
+      id: `feature-${Date.now()}`,
+      name: `${feature} Technology`,
+    };
+    
+    setSheetProduct(featureSheetProduct);
+  };
+
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
@@ -214,7 +229,7 @@ export default function Home() {
           cards: convertedCards,
           title: data.title, // Add dynamic title from LLM
           description: data.description, // Add dynamic description from LLM
-          proactive_tip: `💡 Tip: You can add any of these TVs to comparison by saying "add [TV name] to comparison"`,
+          proactive_tip: `💡 Tip: You can add any of these TVs to comparison by saying "add [TV name] to comparison". Click feature pills to learn more!`,
         };
 
         setMessages((prevMessages) => [...prevMessages, assistantMessage]);
@@ -244,7 +259,7 @@ export default function Home() {
   };
 
   const handleLearnMore = (product: any) => {
-    if (sheetProduct && sheetProduct.id === product.id && !sheetProduct.comparison) {
+    if (sheetProduct && sheetProduct.id === product.id && !sheetProduct.comparison && !sheetProduct.isFeature) {
       setSheetProduct(null);
     } else {
       setSheetProduct(product);
@@ -423,6 +438,7 @@ export default function Home() {
                 index={pairIndex}
                 onLearnMore={handleLearnMore}
                 onCompare={handleCompareToggle}
+                onFeatureClick={handleFeatureClick} // NEW: Pass feature handler
                 compareProducts={compareProducts}
                 sheetOpen={!!sheetProduct}
               />

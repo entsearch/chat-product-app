@@ -16,6 +16,7 @@ interface ChatResponseProps {
   index: number;
   onLearnMore: (product: any) => void;
   onCompare: (product: any) => void;
+  onFeatureClick: (feature: string) => void; // ONLY ADDITION: Feature click handler
   compareProducts: any[];
   sheetOpen?: boolean;
 }
@@ -26,6 +27,7 @@ export default function ChatResponse({
   index,
   onLearnMore,
   onCompare,
+  onFeatureClick, // ONLY ADDITION: Feature click handler
   compareProducts,
   sheetOpen
 }: ChatResponseProps) {
@@ -35,10 +37,10 @@ export default function ChatResponse({
   const backgroundImages = [
     'https://images.samsung.com/is/image/samsung/assets/global/hq/vd/tvs/vision-ai-tv/2025-vision-ai-tv-f07-petcare-2-dog-pc.png?imbypass=true',
     'https://images.samsung.com/is/image/samsung/assets/global/hq/vd/tvs/vision-ai-tv/2025-vision-ai-tv-f08-universal-gestures-1-tv-pc.png?imbypass=true',
-    'https://images.samsung.com/is/image/samsung/p6pim/us/feature/165878546/us-feature-intelligently-enhanced-color-expression-546018666?$ORIGIN_IMG$',
-    'https://images.samsung.com/is/image/samsung/p6pim/us/feature/165878561/us-feature-experience-4k-with-richer-colors-and-more-nuanced-details-546018668?$ORIGIN_IMG$',
-    'https://images.samsung.com/is/image/samsung/p6pim/us/feature/165878542/us-feature-enhances-content-to-hdr-like-picture-quality-546018670?$ORIGIN_IMG$',
-    'https://images.samsung.com/is/image/samsung/p6pim/us/feature/165878555/us-feature-enjoy-a-full-range-of-authentic-colors-546018674?$ORIGIN_IMG$'
+    'https://images.samsung.com/is/image/samsung/p6pim/us/feature/165878546/us-feature-intelligently-enhanced-color-expression-546018666?$ORIGIN_IMG',
+    'https://images.samsung.com/is/image/samsung/p6pim/us/feature/165878561/us-feature-experience-4k-with-richer-colors-and-more-nuanced-details-546018668?$ORIGIN_IMG',
+    'https://images.samsung.com/is/image/samsung/p6pim/us/feature/165878542/us-feature-enhances-content-to-hdr-like-picture-quality-546018670?$ORIGIN_IMG',
+    'https://images.samsung.com/is/image/samsung/p6pim/us/feature/165878555/us-feature-enjoy-a-full-range-of-authentic-colors-546018674?$ORIGIN_IMG',
   ];
 
   const [selectedBackground, setSelectedBackground] = useState(
@@ -206,6 +208,7 @@ export default function ChatResponse({
                       {...p}
                       onLearnMore={onLearnMore}
                       onCompare={onCompare}
+                      onFeatureClick={onFeatureClick} // ONLY ADDITION: Pass feature handler
                       isCompared={compareProducts.some((cp: any) => cp.id === p.id)}
                       maxComparisonsReached={compareProducts.length >= 3}
                     />

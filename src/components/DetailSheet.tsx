@@ -10,6 +10,11 @@ export default function DetailSheet({ sheetProduct, setSheetProduct }: DetailShe
   const [selectedCriteria, setSelectedCriteria] = useState<string[]>([]);
   const [showRecommendation, setShowRecommendation] = useState(false);
   const [recommendedTV, setRecommendedTV] = useState<any>(null);
+  
+  // NEW: State for feature descriptions
+  const [featureDescription, setFeatureDescription] = useState<string>('');
+  const [loadingFeatureDescription, setLoadingFeatureDescription] = useState(false);
+  
   const recommendationRef = useRef<HTMLDivElement>(null);
   const recommendButtonRef = useRef<HTMLDivElement>(null);
 
@@ -18,7 +23,36 @@ export default function DetailSheet({ sheetProduct, setSheetProduct }: DetailShe
     setSelectedCriteria([]);
     setShowRecommendation(false);
     setRecommendedTV(null);
+    
+    // NEW: If it's a feature sheet, fetch the description
+    if (sheetProduct?.isFeature) {
+      fetchFeatureDescription(sheetProduct.feature);
+    } else {
+      setFeatureDescription('');
+    }
   }, [sheetProduct]);
+
+  // NEW: Fetch feature description from API
+  const fetchFeatureDescription = async (feature: string) => {
+    setLoadingFeatureDescription(true);
+    try {
+      const response = await fetch('/api/feature-description', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ feature }),
+      });
+      
+      const data = await response.json();
+      setFeatureDescription(data.description || 'Feature description not available.');
+    } catch (error) {
+      console.error('Error fetching feature description:', error);
+      setFeatureDescription('Unable to load feature description. Please try again.');
+    } finally {
+      setLoadingFeatureDescription(false);
+    }
+  };
 
   // Scroll to recommendation button when it appears
   useEffect(() => {
@@ -89,7 +123,49 @@ export default function DetailSheet({ sheetProduct, setSheetProduct }: DetailShe
           </button>
           
           <div className="p-6">
-            {sheetProduct.comparison ? (
+            {/* NEW: Feature Description Mode */}
+            {sheetProduct.isFeature ? (
+              <div className="space-y-6 mt-6">
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-4">
+                    <span className="text-3xl">✨</span>
+                  </div>
+                  <h2 className="text-4xl font-bold text-gray-900 mb-2">{sheetProduct.feature}</h2>
+                </div>
+                
+                {loadingFeatureDescription ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="text-center">
+                      <div className="inline-flex items-center justify-center space-x-2 mb-4">
+                        <div className="w-4 h-4 bg-blue-600 rounded-full animate-bounce"></div>
+                        <div className="w-4 h-4 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                        <div className="w-4 h-4 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      </div>
+                      <p className="text-gray-600">Generating detailed explanation...</p>
+                    </div>
+                  </div>
+                ) : (
+                  <motion.div
+                    className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 shadow-lg border border-blue-200"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div className="prose prose-lg max-w-none">
+                      <div className="text-gray-800 leading-relaxed space-y-4">
+                        {featureDescription.split('\n').map((paragraph, index) => (
+                          paragraph.trim() && (
+                            <p key={index} className="text-base leading-7">
+                              {paragraph.trim()}
+                            </p>
+                          )
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            ) : sheetProduct.comparison ? (
               <div className="space-y-6 mt-6">
                 <div className="text-center">
                   <h2 className="text-3xl font-bold text-gray-900 mb-2">TV Showdown</h2>

@@ -18,6 +18,7 @@ interface ProductCardProps {
   learn_more: string;
   onLearnMore: (product: any) => void;
   onCompare: (product: any) => void;
+  onFeatureClick: (feature: string) => void; // NEW: For feature clicks
   isCompared: boolean;
   maxComparisonsReached: boolean;
   // Legacy props for compatibility
@@ -39,6 +40,7 @@ export default function ProductCard({
   learn_more,
   onLearnMore,
   onCompare,
+  onFeatureClick, // NEW
   isCompared,
   maxComparisonsReached,
   specs = {},
@@ -92,6 +94,12 @@ export default function ProductCard({
       setBackImage(getRandomImage()); // Set random image only when flipping to back
     }
     setIsFlipped(!isFlipped);
+  };
+
+  // NEW: Handle feature clicks - prevent card flip and open feature description
+  const handleFeatureClick = (e: React.MouseEvent, feature: string) => {
+    e.stopPropagation(); // Prevent card flip
+    onFeatureClick(feature);
   };
 
   // Check if current price is lower than suggested
@@ -192,17 +200,21 @@ export default function ProductCard({
                 </div>
               )}
 
-              {/* Features */}
+              {/* UPDATED: Features - Now Clickable Buttons */}
               {displayFeatures.length > 0 && (
                 <div className="flex justify-center">
                   <div className="grid grid-cols-2 gap-2">
                     {displayFeatures.map((feature, idx) => (
-                      <span
+                      <motion.button
                         key={idx}
-                        className="w-50 h-8 bg-gradient-to-r from-gray-800 to-gray-900 text-white text-sm font-bold px-2 py-1 rounded-lg shadow-md text-center flex items-center justify-center line-clamp-1 overflow-hidden"
+                        className="w-50 h-8 bg-gradient-to-r from-gray-800 to-gray-900 text-white text-sm font-bold px-2 py-1 rounded-lg shadow-md text-center flex items-center justify-center line-clamp-1 overflow-hidden hover:from-blue-600 hover:to-blue-700 transition-all duration-200 hover:scale-105 hover:shadow-lg cursor-pointer"
+                        onClick={(e) => handleFeatureClick(e, feature)}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        title={`Learn more about ${feature}`}
                       >
                         {feature}
-                      </span>
+                      </motion.button>
                     ))}
                   </div>
                 </div>
