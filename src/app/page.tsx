@@ -256,6 +256,43 @@ export default function Home() {
     };
   }, []);
 
+  // Scroll to the latest response when new messages are added (after response is received)
+  useEffect(() => {
+    // Only scroll if we have messages, are not currently loading, and have assistant messages
+    if (messages.length > 0 && !isLoading) {
+      // Find the last assistant message (newest response)
+      const lastAssistantMessage = [...messages].reverse().find(msg => msg.role === 'assistant');
+      
+      if (lastAssistantMessage) {
+        // Multiple scroll attempts to find and scroll to the newest response
+        const scrollTimeouts = [500, 800, 1200];
+        const timers: NodeJS.Timeout[] = [];
+
+        scrollTimeouts.forEach(delay => {
+          const timer = setTimeout(() => {
+            // Find the newest ChatResponse component by looking for the last one
+            const allChatResponses = document.querySelectorAll('[data-chat-response]');
+            const newestResponse = allChatResponses[allChatResponses.length - 1] as HTMLElement;
+            
+            if (newestResponse) {
+              console.log(`Scrolling to newest response at ${delay}ms`);
+              newestResponse.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start',
+                inline: 'nearest'
+              });
+            }
+          }, delay);
+          timers.push(timer);
+        });
+
+        return () => {
+          timers.forEach(timer => clearTimeout(timer));
+        };
+      }
+    }
+  }, [messages, isLoading]);
+
   // --- staged loader control ---
   useEffect(() => {
     const randDelay = () =>
@@ -309,6 +346,7 @@ export default function Home() {
           {titleText}
         </motion.h1>
         <motion.p
+          id="ai-recommendations-header"
           className="text-lg text-gray-600 mt-2"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
