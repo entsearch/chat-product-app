@@ -9,6 +9,8 @@ interface ChatResponseProps {
     response_text: string;
     cards?: any[];
     proactive_tip?: string;
+    title?: string;
+    description?: string;
   };
   userQuery?: string;
   index: number;
@@ -108,6 +110,10 @@ export default function ChatResponse({
     return () => clearTimeout(scrollTimer);
   }, [userQuery, message.cards]);
 
+  // Get dynamic title and description from LLM or use fallbacks
+  const dynamicTitle = message.title || "Transform Your Home with Samsung";
+  const dynamicDescription = message.description || "Explore the latest in smart home technology with Samsung's innovative TVs and cutting-edge features.";
+
   return (
     <div
       ref={responseRef}
@@ -161,7 +167,7 @@ export default function ChatResponse({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
                 >
-                  Transform Your Home with Samsung
+                  {dynamicTitle}
                 </motion.h2>
                 <motion.p
                   className="text-xl text-gray-200 max-w-3xl leading-relaxed drop-shadow-[0_4px_6px_rgba(0,0,0,0.5)]"
@@ -169,8 +175,7 @@ export default function ChatResponse({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.5 }}
                 >
-                  Explore the latest in smart home technology with Samsung's
-                  innovative TVs and cutting-edge features.
+                  {dynamicDescription}
                 </motion.p>
               </div>
             </div>

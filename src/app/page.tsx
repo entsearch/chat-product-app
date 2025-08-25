@@ -27,6 +27,8 @@ interface ChatMessage {
   cards?: ProductCard[];
   proactive_tip?: string;
   comparison?: any[];
+  title?: string;
+  description?: string;
 }
 
 export default function Home() {
@@ -210,6 +212,8 @@ export default function Home() {
           role: 'assistant',
           response_text: data.chatResponse,
           cards: convertedCards,
+          title: data.title, // Add dynamic title from LLM
+          description: data.description, // Add dynamic description from LLM
           proactive_tip: `💡 Tip: You can add any of these TVs to comparison by saying "add [TV name] to comparison"`,
         };
 
@@ -370,7 +374,13 @@ export default function Home() {
       {/* Samsung TV Images Carousel - Only show on initial load */}
       {messages.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-          <div className="carousel-container-centered">
+          {/* Central Container/Viewport */}
+          <div className="carousel-viewport">
+            <div className="viewport-label">Spotlight Zone</div>
+          </div>
+          
+          {/* Carousel Track - spans full page */}
+          <div className="carousel-container-full">
             <div className="carousel-track">
               {/* First set of images */}
               {carouselImages.map((src, index) => (
@@ -500,57 +510,130 @@ export default function Home() {
 
       {/* Carousel CSS Styles */}
       <style jsx>{`
-        .carousel-container-centered {
-          width: 100vw;
+        /* Central container - just a visual indicator */
+        .carousel-viewport {
+          width: 400px;
           height: 240px;
-          overflow: hidden;
+          border: 3px solid rgba(59, 130, 246, 0.6);
+          border-radius: 16px;
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(10px);
           position: relative;
-          mask: linear-gradient(
-            90deg,
-            transparent,
-            white 20%,
-            white 80%,
-            transparent
-          );
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+          z-index: 20;
+          pointer-events: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .viewport-label {
+          color: rgba(59, 130, 246, 0.7);
+          font-size: 14px;
+          font-weight: 500;
+          text-align: center;
+          opacity: 0.8;
+        }
+
+        /* Full-page carousel container */
+        .carousel-container-full {
+          position: absolute;
+          width: 100vw;
+          height: 200px;
+          top: 50%;
+          left: 0;
+          transform: translateY(-50%);
+          overflow: hidden;
+          z-index: 10;
         }
 
         .carousel-track {
           display: flex;
           width: fit-content;
-          animation: scroll 30s linear infinite;
+          animation: scrollFullPage 40s linear infinite;
+          align-items: center;
+          height: 100%;
+          gap: 80px;
+          padding-left: 100vw;
         }
 
         .carousel-item {
           flex: 0 0 auto;
-          margin-right: 24px;
-          border-radius: 16px;
+          border-radius: 12px;
           overflow: hidden;
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-          transition: transform 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: magnifyInCenter 40s linear infinite;
         }
 
-        .carousel-item:hover {
-          transform: scale(1.05);
-        }
+        /* Staggered delays for each image - 5.7s apart */
+        .carousel-item:nth-child(1) { animation-delay: 0s; }
+        .carousel-item:nth-child(2) { animation-delay: -5.7s; }
+        .carousel-item:nth-child(3) { animation-delay: -11.4s; }
+        .carousel-item:nth-child(4) { animation-delay: -17.1s; }
+        .carousel-item:nth-child(5) { animation-delay: -22.8s; }
+        .carousel-item:nth-child(6) { animation-delay: -28.5s; }
+        .carousel-item:nth-child(7) { animation-delay: -34.2s; }
+        .carousel-item:nth-child(8) { animation-delay: -5.7s; }
+        .carousel-item:nth-child(9) { animation-delay: -11.4s; }
+        .carousel-item:nth-child(10) { animation-delay: -17.1s; }
+        .carousel-item:nth-child(11) { animation-delay: -22.8s; }
+        .carousel-item:nth-child(12) { animation-delay: -28.5s; }
+        .carousel-item:nth-child(13) { animation-delay: -34.2s; }
+        .carousel-item:nth-child(14) { animation-delay: -40s; }
 
         .carousel-image {
-          width: 320px;
-          height: 200px;
+          width: 160px;
+          height: 110px;
           object-fit: cover;
-          border-radius: 16px;
+          border-radius: 12px;
+          box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+          transition: all 0.3s ease;
         }
 
-        @keyframes scroll {
+        @keyframes scrollFullPage {
           0% {
             transform: translateX(0);
           }
           100% {
-            transform: translateX(-50%);
+            transform: translateX(-1680px); /* 7 images * 240px spacing */
+          }
+        }
+
+        @keyframes magnifyInCenter {
+          0% {
+            transform: scale(1);
+          }
+          
+          /* Approaching center */
+          40% {
+            transform: scale(1);
+          }
+          
+          /* Enter center - magnify quickly */
+          45% {
+            transform: scale(2);
+          }
+          
+          /* Stay magnified for 2 seconds */
+          60% {
+            transform: scale(2);
+          }
+          
+          /* Leave center - back to normal */
+          65% {
+            transform: scale(1);
+          }
+          
+          100% {
+            transform: scale(1);
           }
         }
 
         /* Pause animation on hover */
-        .carousel-container-centered:hover .carousel-track {
+        .carousel-container-full:hover .carousel-track,
+        .carousel-container-full:hover .carousel-item {
           animation-play-state: paused;
         }
       `}</style>
