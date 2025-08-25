@@ -33,7 +33,7 @@ export default function ChatBar({
   
   const getPlaceholderText = () => {
     if (isCompareMode) return 'Max 3 TVs can be selected for comparison';
-    return 'Discover Your Perfect TV ...';
+    return 'Mary, Discover Your Perfect TV ...';
   };
 
   const handleSendClick = () => {

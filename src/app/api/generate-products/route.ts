@@ -64,6 +64,8 @@ each feature should never exceed 22 characters
 4. Use REAL size options from "variants" array - pick the most popular size as main size
 5. Create realistic pricing based on TV tier: Budget TVs ($400-800), Mid-range ($800-1500), Premium ($1500-3000), Ultra-premium ($3000+)
 6. Write detailed, specific descriptions explaining why each TV matches the user's query
+7. Do not repeat user question verbatim in responses, always sound natural, user question context
+8. Never use name of any other brand in response, e.g. LG Sony, HiSense etc..even when user is asking
 
 RESPONSE FORMAT - Return exactly this JSON structure:
 {
