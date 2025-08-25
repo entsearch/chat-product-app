@@ -39,6 +39,17 @@ export default function Home() {
   const loadingTimersRef = useRef<number[]>([]);
   const loadingRef = useRef<HTMLDivElement | null>(null);
 
+  // Samsung TV Carousel Images
+  const carouselImages = [
+    'https://images.samsung.com/is/image/samsung/assets/global/hq/vd/tvs/qled-tv/highlights/2025-neo-qled-tv-f01-5-samsung-vision-ai-color-booster-pro-pc.jpg?imbypass=true',
+    'https://images.samsung.com/is/image/samsung/assets/global/hq/vd/tvs/qled-tv/highlights/2025-neo-qled-tv-f04-3-art-store-pc.jpg?imbypass=true',
+    'https://stg-images.samsung.com/is/image/samsung/assets/global/hq/vd/lifestyle-tvs/the-frame/highlights/2025-the-frame-why-the-frame-f04-3-design-preview-pc.jpg?$1440_N_JPG$',
+    'https://stg-images.samsung.com/is/image/samsung/assets/global/hq/vd/lifestyle-tvs/the-frame/highlights/2025-the-frame-why-the-frame-f05-3-art-preview-pc.jpg?$1440_N_JPG$',
+    'https://stg-images.samsung.com/is/image/samsung/assets/global/hq/vd/lifestyle-tvs/the-frame/highlights/2025-the-frame-why-the-frame-f06-3-picture-quality-matte-display-pc.jpg?$1440_N_JPG$',
+    'https://images.samsung.com/is/image/samsung/assets/us/televisions-home-theater/tvs/lifestyle-tvs/dt/2025_lifestyle_tvs_pcd_f06_the_frame_lifestyle_pc.jpg?$1440_N_JPG$',
+    'https://images.samsung.com/is/image/samsung/assets/us/televisions-home-theater/tvs/lifestyle-tvs/dt/2025_lifestyle_tvs_pcd_f07_the_serif_lifestyle_pc.jpg?$1440_N_JPG$'
+  ];
+
   // Function to convert API response to your existing card format
   const convertApiCardsToYourFormat = (apiCards: any[]) => {
     return apiCards.map((card, index) => {
@@ -352,9 +363,39 @@ export default function Home() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: fullTitle.length * 0.08 + 0.2 }}
         >
-          AI-Powered TV Recommendations
+          GenAI can make mistakes
         </motion.p>
       </div>
+
+      {/* Samsung TV Images Carousel - Only show on initial load */}
+      {messages.length === 0 && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+          <div className="carousel-container-centered">
+            <div className="carousel-track">
+              {/* First set of images */}
+              {carouselImages.map((src, index) => (
+                <div key={`first-${index}`} className="carousel-item">
+                  <img
+                    src={src}
+                    alt={`Samsung TV ${index + 1}`}
+                    className="carousel-image"
+                  />
+                </div>
+              ))}
+              {/* Duplicate set for infinite scroll */}
+              {carouselImages.map((src, index) => (
+                <div key={`second-${index}`} className="carousel-item">
+                  <img
+                    src={src}
+                    alt={`Samsung TV ${index + 1}`}
+                    className="carousel-image"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto p-8 space-y-8 pb-40 scroll-container">
         <AnimatePresence>
@@ -456,6 +497,63 @@ export default function Home() {
         isLoading={isLoading}
       />
       <DetailSheet sheetProduct={sheetProduct} setSheetProduct={setSheetProduct} />
+
+      {/* Carousel CSS Styles */}
+      <style jsx>{`
+        .carousel-container-centered {
+          width: 100vw;
+          height: 240px;
+          overflow: hidden;
+          position: relative;
+          mask: linear-gradient(
+            90deg,
+            transparent,
+            white 20%,
+            white 80%,
+            transparent
+          );
+        }
+
+        .carousel-track {
+          display: flex;
+          width: fit-content;
+          animation: scroll 30s linear infinite;
+        }
+
+        .carousel-item {
+          flex: 0 0 auto;
+          margin-right: 24px;
+          border-radius: 16px;
+          overflow: hidden;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+          transition: transform 0.3s ease;
+        }
+
+        .carousel-item:hover {
+          transform: scale(1.05);
+        }
+
+        .carousel-image {
+          width: 320px;
+          height: 200px;
+          object-fit: cover;
+          border-radius: 16px;
+        }
+
+        @keyframes scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+
+        /* Pause animation on hover */
+        .carousel-container-centered:hover .carousel-track {
+          animation-play-state: paused;
+        }
+      `}</style>
     </div>
   );
 }
