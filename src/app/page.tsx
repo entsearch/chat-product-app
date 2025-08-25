@@ -450,7 +450,7 @@ export default function Home() {
               ref={loadingRef}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex justify-start"
+              className="flex justify-start pl-10"
             >
               <div className="relative bg-black rounded-2xl p-6 max-w-4xl w-full">
                 <HiSparkles className="absolute top-3 right-3 text-purple-500" />
