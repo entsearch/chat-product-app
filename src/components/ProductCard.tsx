@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { FaArrowLeft } from '@react-icons/all-files/fa/FaArrowLeft';
+import { FaShoppingCart } from '@react-icons/all-files/fa/FaShoppingCart';
 
 interface ProductCardProps {
   id: string;
@@ -182,7 +183,7 @@ export default function ProductCard({
                   <div className="grid grid-cols-5 gap-2">
                     {displayAvailableSizes.map((sizeOption, idx) => (
                       <div key={idx} className="group relative">
-                        <div className="bg-white border border-gray-300 rounded-lg px-2 py-1 text-center transition-all duration-200 hover:bg-gray-900 hover:text-white">
+                        <div className="bg-white border border-gray-300 rounded-lg px-2 py-1 text-center">
                           <span className="text-sm font-medium">{sizeOption}</span>
                         </div>
                       </div>
@@ -223,19 +224,20 @@ export default function ProductCard({
               </div>
             </div>
 
-            {/* Fixed Action Buttons */}
+            {/* Fixed Action Button - Shopping Cart Icon */}
             <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 rounded-b-3xl">
               <div className="flex justify-center">
                 <motion.button
-                  className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl"
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-full transition-all duration-200 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl group"
                   onClick={(e) => {
                     e.stopPropagation();
                     console.log('Buy Now clicked for:', displayName);
                   }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  title="Add to Cart"
                 >
-                  BUY NOW
+                  <FaShoppingCart className="w-8 h-8 group-hover:scale-110 transition-transform duration-200" />
                 </motion.button>
               </div>
             </div>
@@ -287,19 +289,20 @@ export default function ProductCard({
             {/* Spacer to push button to bottom */}
             <div className="flex-1"></div>
 
-            {/* Fixed Action Buttons */}
+            {/* Fixed Action Button - Shopping Cart Icon */}
             <div className="py-4 bg-gray-50 border-t border-gray-100 rounded-b-3xl">
               <div className="flex justify-center">
                 <motion.button
-                  className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl"
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-full transition-all duration-200 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl group"
                   onClick={(e) => {
                     e.stopPropagation();
                     console.log('Buy Now clicked for:', displayName);
                   }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  title="Add to Cart"
                 >
-                  BUY NOW
+                  <FaShoppingCart className="w-8 h-8 group-hover:scale-110 transition-transform duration-200" />
                 </motion.button>
               </div>
             </div>
