@@ -63,20 +63,6 @@ export default function ChatResponse({ message, userQuery, index, onLearnMore, o
 
       {/* Main Content Container */}
       <div className="relative">
-        {/* AI Response Bubble */}
-        <motion.div
-          className="bg-black text-white p-6 rounded-3xl rounded-br-none flex flex-col shadow-lg max-w-[65%] relative z-20 mb-4"
-          style={{
-            background: 'linear-gradient(135deg, #000000, #1a1a1a)',
-          }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <HiSparkles className="absolute top-3 right-3 text-purple-400 w-6 h-6" />
-          <p className="text-wrap break-words text-lg leading-relaxed">{message.response_text}</p>
-        </motion.div>
-
         {/* Main Content Area with Samsung TV Background */}
         {message.cards && message.cards.length > 0 && (
           <motion.div
@@ -131,15 +117,6 @@ export default function ChatResponse({ message, userQuery, index, onLearnMore, o
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
               >
-                <span className="bg-gray-800/80 border border-gray-600/30 text-white px-6 py-2 rounded-full font-medium">
-                  Vision AI Technology
-                </span>
-                <span className="bg-gray-800/80 border border-gray-600/30 text-white px-6 py-2 rounded-full font-medium">
-                  Smart Hub
-                </span>
-                <span className="bg-gray-800/80 border border-gray-600/30 text-white px-6 py-2 rounded-full font-medium">
-                  8K Upscaling
-                </span>
               </motion.div>
 
               {/* Product Cards Grid */}
