@@ -374,31 +374,26 @@ export default function Home() {
       {/* Samsung TV Images Carousel - Only show on initial load */}
       {messages.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-          {/* Central Container/Viewport */}
-          <div className="carousel-viewport">
-            <div className="viewport-label">Spotlight Zone</div>
-          </div>
-          
-          {/* Carousel Track - spans full page */}
-          <div className="carousel-container-full">
-            <div className="carousel-track">
+          {/* Simple Carousel Track - spans full page */}
+          <div className="simple-carousel-container">
+            <div className="simple-carousel-track">
               {/* First set of images */}
               {carouselImages.map((src, index) => (
-                <div key={`first-${index}`} className="carousel-item">
+                <div key={`first-${index}`} className="simple-carousel-item">
                   <img
                     src={src}
                     alt={`Samsung TV ${index + 1}`}
-                    className="carousel-image"
+                    className="simple-carousel-image"
                   />
                 </div>
               ))}
               {/* Duplicate set for infinite scroll */}
               {carouselImages.map((src, index) => (
-                <div key={`second-${index}`} className="carousel-item">
+                <div key={`second-${index}`} className="simple-carousel-item">
                   <img
                     src={src}
                     alt={`Samsung TV ${index + 1}`}
-                    className="carousel-image"
+                    className="simple-carousel-image"
                   />
                 </div>
               ))}
@@ -452,7 +447,7 @@ export default function Home() {
                     const isActive = loadingStep === step;
                     const isPassed = loadingStep > step;
                     const base = 'flex items-center justify-start gap-3';
-                    const active = 'text-blue-700 font-medium text-2xl';
+                    const active = 'text-white font-medium text-2xl';
                     const muted = 'text-gray-400';
                     return (
                       <div
@@ -462,15 +457,9 @@ export default function Home() {
                         <div className="min-w-2 min-h-2 flex items-center gap-1">
                           {isActive ? (
                             <>
-                              <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
-                              <div
-                                className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"
-                                style={{ animationDelay: '0.15s' }}
-                              />
-                              <div
-                                className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"
-                                style={{ animationDelay: '0.3s' }}
-                              />
+                              <div className="w-2 h-2 rounded-full animate-pulse ai-dot ai-dot-1" />
+                              <div className="w-2 h-2 rounded-full animate-pulse ai-dot ai-dot-2" />
+                              <div className="w-2 h-2 rounded-full animate-pulse ai-dot ai-dot-3" />
                             </>
                           ) : (
                             <>
@@ -508,35 +497,10 @@ export default function Home() {
       />
       <DetailSheet sheetProduct={sheetProduct} setSheetProduct={setSheetProduct} />
 
-      {/* Carousel CSS Styles */}
+      {/* Simple Carousel CSS Styles */}
       <style jsx>{`
-        /* Central container - just a visual indicator */
-        .carousel-viewport {
-          width: 400px;
-          height: 240px;
-          border: 3px solid rgba(59, 130, 246, 0.6);
-          border-radius: 16px;
-          background: rgba(255, 255, 255, 0.05);
-          backdrop-filter: blur(10px);
-          position: relative;
-          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-          z-index: 20;
-          pointer-events: none;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .viewport-label {
-          color: rgba(59, 130, 246, 0.7);
-          font-size: 14px;
-          font-weight: 500;
-          text-align: center;
-          opacity: 0.8;
-        }
-
-        /* Full-page carousel container */
-        .carousel-container-full {
+        /* Simple carousel container */
+        .simple-carousel-container {
           position: absolute;
           width: 100vw;
           height: 200px;
@@ -545,96 +509,86 @@ export default function Home() {
           transform: translateY(-50%);
           overflow: hidden;
           z-index: 10;
+          mask: linear-gradient(
+            90deg,
+            transparent,
+            white 10%,
+            white 90%,
+            transparent
+          );
         }
 
-        .carousel-track {
+        .simple-carousel-track {
           display: flex;
           width: fit-content;
-          animation: scrollFullPage 40s linear infinite;
+          animation: simpleScroll 35s linear infinite;
           align-items: center;
           height: 100%;
-          gap: 80px;
-          padding-left: 100vw;
+          gap: 60px;
         }
 
-        .carousel-item {
+        .simple-carousel-item {
           flex: 0 0 auto;
           border-radius: 12px;
           overflow: hidden;
           display: flex;
           align-items: center;
           justify-content: center;
-          animation: magnifyInCenter 40s linear infinite;
         }
 
-        /* Staggered delays for each image - 5.7s apart */
-        .carousel-item:nth-child(1) { animation-delay: 0s; }
-        .carousel-item:nth-child(2) { animation-delay: -5.7s; }
-        .carousel-item:nth-child(3) { animation-delay: -11.4s; }
-        .carousel-item:nth-child(4) { animation-delay: -17.1s; }
-        .carousel-item:nth-child(5) { animation-delay: -22.8s; }
-        .carousel-item:nth-child(6) { animation-delay: -28.5s; }
-        .carousel-item:nth-child(7) { animation-delay: -34.2s; }
-        .carousel-item:nth-child(8) { animation-delay: -5.7s; }
-        .carousel-item:nth-child(9) { animation-delay: -11.4s; }
-        .carousel-item:nth-child(10) { animation-delay: -17.1s; }
-        .carousel-item:nth-child(11) { animation-delay: -22.8s; }
-        .carousel-item:nth-child(12) { animation-delay: -28.5s; }
-        .carousel-item:nth-child(13) { animation-delay: -34.2s; }
-        .carousel-item:nth-child(14) { animation-delay: -40s; }
-
-        .carousel-image {
-          width: 160px;
-          height: 110px;
+        .simple-carousel-image {
+          width: 280px;
+          height: 180px;
           object-fit: cover;
           border-radius: 12px;
-          box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
-          transition: all 0.3s ease;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+          transition: transform 0.3s ease;
         }
 
-        @keyframes scrollFullPage {
+        .simple-carousel-image:hover {
+          transform: scale(1.05);
+        }
+
+        @keyframes simpleScroll {
           0% {
             transform: translateX(0);
           }
           100% {
-            transform: translateX(-1680px); /* 7 images * 240px spacing */
-          }
-        }
-
-        @keyframes magnifyInCenter {
-          0% {
-            transform: scale(1);
-          }
-          
-          /* Approaching center */
-          40% {
-            transform: scale(1);
-          }
-          
-          /* Enter center - magnify quickly */
-          45% {
-            transform: scale(2);
-          }
-          
-          /* Stay magnified for 2 seconds */
-          60% {
-            transform: scale(2);
-          }
-          
-          /* Leave center - back to normal */
-          65% {
-            transform: scale(1);
-          }
-          
-          100% {
-            transform: scale(1);
+            transform: translateX(-1960px); /* 7 images * 280px width + 60px gap */
           }
         }
 
         /* Pause animation on hover */
-        .carousel-container-full:hover .carousel-track,
-        .carousel-container-full:hover .carousel-item {
+        .simple-carousel-container:hover .simple-carousel-track {
           animation-play-state: paused;
+        }
+
+        /* AI-themed color changing dots */
+        .ai-dot {
+          animation: aiColorCycle 2s ease-in-out infinite;
+        }
+
+        .ai-dot-1 {
+          animation-delay: 0s;
+        }
+
+        .ai-dot-2 {
+          animation-delay: 0.3s;
+        }
+
+        .ai-dot-3 {
+          animation-delay: 0.6s;
+        }
+
+        @keyframes aiColorCycle {
+          0% { background-color: #3B82F6; } /* Blue */
+          14% { background-color: #8B5CF6; } /* Purple */
+          28% { background-color: #06B6D4; } /* Cyan */
+          42% { background-color: #EC4899; } /* Pink */
+          56% { background-color: #10B981; } /* Emerald */
+          70% { background-color: #F59E0B; } /* Amber */
+          84% { background-color: #EF4444; } /* Red */
+          100% { background-color: #3B82F6; } /* Back to Blue */
         }
       `}</style>
     </div>
