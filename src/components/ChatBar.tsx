@@ -10,9 +10,18 @@ interface ChatBarProps {
   compareProducts: any[];
   setCompareProducts: (products: any[]) => void;
   setSheetProduct: (product: any) => void;
+  isLoading?: boolean; // Added loading prop
 }
 
-export default function ChatBar({ input, setInput, handleSend, compareProducts, setCompareProducts, setSheetProduct }: ChatBarProps) {
+export default function ChatBar({ 
+  input, 
+  setInput, 
+  handleSend, 
+  compareProducts, 
+  setCompareProducts, 
+  setSheetProduct,
+  isLoading = false // Default to false
+}: ChatBarProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   
   const handleClearComparisons = () => {
@@ -21,6 +30,25 @@ export default function ChatBar({ input, setInput, handleSend, compareProducts, 
   };
   
   const isCompareMode = compareProducts.length >= 1;
+  const isDisabled = isLoading || (compareProducts.length >= 3);
+  
+  const getPlaceholderText = () => {
+    if (isLoading) return 'AI is thinking...';
+    if (isCompareMode) return 'Max 3 TVs can be selected for comparison';
+    return 'Discover Your Perfect TV ...';
+  };
+
+  const handleSendClick = () => {
+    if (!isLoading && input.trim()) {
+      handleSend();
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !isLoading && input.trim()) {
+      handleSend();
+    }
+  };
   
   return (
     <div 
@@ -45,13 +73,14 @@ export default function ChatBar({ input, setInput, handleSend, compareProducts, 
                 transition={{ duration: 0.2 }}
               >
                 <img
-                  src={tv.image}
+                  src={tv.image || tv.frontImage}
                   alt={tv.name}
                   className="w-10 h-10 rounded-full object-contain"
                 />
                 <button
-                  className="absolute -top-1 -right-1 text-xs text-white bg-gray-600 rounded-full w-4 h-4 flex items-center justify-center"
+                  className="absolute -top-1 -right-1 text-xs text-white bg-gray-600 rounded-full w-4 h-4 flex items-center justify-center hover:bg-gray-700 transition-colors"
                   onClick={() => setCompareProducts(compareProducts.filter((cp) => cp.id !== tv.id))}
+                  disabled={isLoading}
                 >
                   ×
                 </button>
@@ -61,17 +90,26 @@ export default function ChatBar({ input, setInput, handleSend, compareProducts, 
         </div>
         {compareProducts.length >= 2 && (
           <div
-            className="flex items-center px-5 py-2 rounded-full text-lg font-medium bg-blue-600 text-white cursor-pointer"
+            className={`flex items-center px-5 py-2 rounded-full text-lg font-medium cursor-pointer transition-all duration-200 ${
+              isLoading 
+                ? 'bg-gray-500 text-gray-300 cursor-not-allowed' 
+                : 'bg-blue-600 text-white hover:bg-blue-700'
+            }`}
             style={{ marginRight: '5.5rem', marginBottom: '0.5rem'}}
-            onClick={() => setSheetProduct({ comparison: true, tvs: compareProducts })}
+            onClick={() => !isLoading && setSheetProduct({ comparison: true, tvs: compareProducts })}
           >
             <span>Compare Now</span>
             <button
-              className="ml-3 text-white hover:text-gray-200 focus:outline-none text-lg"
+              className={`ml-3 hover:text-gray-200 focus:outline-none text-lg transition-colors ${
+                isLoading ? 'cursor-not-allowed opacity-50' : ''
+              }`}
               onClick={(e) => {
                 e.stopPropagation();
-                handleClearComparisons();
+                if (!isLoading) {
+                  handleClearComparisons();
+                }
               }}
+              disabled={isLoading}
             >
               ✖
             </button>
@@ -84,21 +122,76 @@ export default function ChatBar({ input, setInput, handleSend, compareProducts, 
           ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-          className="flex-1 bg-white/95 text-black px-4 py-3 rounded-2xl text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+          onKeyDown={handleKeyDown}
+          className={`flex-1 text-black px-4 py-3 rounded-2xl text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full transition-all duration-200 ${
+            isDisabled 
+              ? 'bg-white/60 cursor-not-allowed opacity-70' 
+              : 'bg-white/95 hover:bg-white focus:bg-white'
+          }`}
           style={{ backdropFilter: 'blur(8px)' }} // Subtle blur for input
-          placeholder={isCompareMode ? 'Max 3 TVs can be selected for comparison' : 'Discover Your Perfect TV ...'}
-          disabled={compareProducts.length >= 3}
+          placeholder={getPlaceholderText()}
+          disabled={isDisabled}
         />
         <div className="flex items-center ml-4 space-x-2">
-          <button onClick={handleSend} className="text-white hover:text-blue-300">
-            <FiSend className="w-6 h-6" />
+          <button 
+            onClick={handleSendClick} 
+            className={`transition-all duration-200 ${
+              isLoading || !input.trim()
+                ? 'text-gray-400 cursor-not-allowed' 
+                : 'text-white hover:text-blue-300 hover:scale-110'
+            }`}
+            disabled={isLoading || !input.trim()}
+          >
+            {isLoading ? (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                className="w-6 h-6 border-2 border-white border-t-transparent rounded-full"
+              />
+            ) : (
+              <FiSend className="w-6 h-6" />
+            )}
           </button>
-          <button className="text-white hover:text-blue-300">
+          <button 
+            className={`transition-colors ${
+              isLoading 
+                ? 'text-gray-400 cursor-not-allowed' 
+                : 'text-white hover:text-blue-300'
+            }`}
+            disabled={isLoading}
+          >
             <MdMic className="w-6 h-6" />
           </button>
         </div>
       </div>
+      
+      {/* Loading indicator bar */}
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            exit={{ opacity: 0, scaleX: 0 }}
+            className="mt-2 h-1 bg-gradient-to-r from-blue-400 via-purple-500 to-blue-400 rounded-full"
+            style={{
+              background: 'linear-gradient(90deg, #60a5fa 0%, #a855f7 50%, #60a5fa 100%)',
+              backgroundSize: '200% 100%',
+              animation: 'gradient-shift 2s ease-in-out infinite'
+            }}
+          />
+        )}
+      </AnimatePresence>
+      
+      <style jsx>{`
+        @keyframes gradient-shift {
+          0%, 100% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+        }
+      `}</style>
     </div>
   );
 }
